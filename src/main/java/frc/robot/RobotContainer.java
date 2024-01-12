@@ -5,6 +5,15 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.AbsoluteDriveCommand;
+import frc.robot.commands.AbsoluteFieldDriveCommand;
+import frc.robot.subsystems.SwerveSubsystem;
+
+import java.io.File;
+
+import com.stuypulse.stuylib.input.gamepads.AutoGamepad;
+
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -16,15 +25,21 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+    private AutoGamepad driver = new AutoGamepad(0);
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+    private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),"neo"));
+
+    
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+    AbsoluteFieldDriveCommand absoluteFieldDriveCommand = new AbsoluteFieldDriveCommand(drivebase, 
+    () -> driver.getLeftY(),
+    () -> driver.getLeftX(),
+    () ->  driver.getRightX());
+    
   }
 
   /**

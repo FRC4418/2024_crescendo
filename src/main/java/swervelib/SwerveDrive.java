@@ -1079,4 +1079,7 @@ public class SwerveDrive
     }
   }
 
+public void headingCorrection(boolean b) {
+}
+
 }
