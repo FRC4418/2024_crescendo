@@ -11,14 +11,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.SwerveSubsystem;
-import java.util.List;
-import java.util.function.DoubleSupplier;
 import swervelib.SwerveController;
 import swervelib.math.SwerveMath;
 
+import java.util.List;
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class SwerveDriveCommand extends Command 
+public class AbsoluteDriveCommand extends Command 
 {
   private final SwerveSubsystem swerve;
   private final DoubleSupplier  vX, vY;
@@ -27,7 +28,7 @@ public class SwerveDriveCommand extends Command
   private boolean initRotation = false;
 
 
-  public SwerveDriveCommand(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier headingHorizontal,
+  public AbsoluteDriveCommand(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier headingHorizontal,
   DoubleSupplier headingVertical, boolean fieldRelative) 
   {
     // Use addRequirements() here to declare subsystem dependencies.
