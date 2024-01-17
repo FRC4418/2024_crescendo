@@ -13,8 +13,10 @@ import java.io.File;
 
 import com.stuypulse.stuylib.input.gamepads.AutoGamepad;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -27,7 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
     private AutoGamepad driver = new AutoGamepad(0);
 
-    private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),"neo"));
+    private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),"maxSwerve"));
 
     
 
@@ -35,11 +37,22 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
-    AbsoluteFieldDriveCommand absoluteFieldDriveCommand = new AbsoluteFieldDriveCommand(drivebase, 
-    () -> driver.getLeftY(),
-    () -> driver.getLeftX(),
-    () ->  driver.getRightX());
+    AbsoluteFieldDriveCommand absoluteFieldDriveCommand = new AbsoluteFieldDriveCommand(
+      drivebase, 
+      () -> driver.getLeftY(),
+      () -> driver.getLeftX(),
+      () ->  driver.getRightX()
+    );
+
+    AbsoluteDriveCommand absoluteDriveCommand = new AbsoluteDriveCommand(
+      drivebase, 
+      ()-> MathUtil.applyDeadband(driver.getLeftY(), 0.1), 
+      ()-> MathUtil.applyDeadband(driver.getLeftX(), 0.1), 
+      ()-> MathUtil.applyDeadband(driver.getRightX(), 0.1), 
+      ()-> MathUtil.applyDeadband(driver.getRightY(), 0.1), 
+      false);
     
+    drivebase.setDefaultCommand(absoluteDriveCommand);
   }
 
   /**
@@ -62,8 +75,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return new Command() {
-      
-    };
+    return new InstantCommand();
   }
 }
