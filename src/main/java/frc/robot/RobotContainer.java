@@ -37,6 +37,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+    //*
     AbsoluteFieldDriveCommand absoluteFieldDriveCommand = new AbsoluteFieldDriveCommand(
       drivebase, 
       () -> driver.getLeftY(),
@@ -50,9 +51,10 @@ public class RobotContainer {
       ()-> MathUtil.applyDeadband(driver.getLeftX(), 0.1), 
       ()-> MathUtil.applyDeadband(driver.getRightX(), 0.1), 
       ()-> MathUtil.applyDeadband(driver.getRightY(), 0.1), 
-      false);
+      true);
     
     drivebase.setDefaultCommand(absoluteDriveCommand);
+    
   }
 
   /**
