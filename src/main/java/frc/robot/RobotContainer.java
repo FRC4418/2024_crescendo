@@ -20,10 +20,16 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import java.util.List;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.stuypulse.stuylib.input.gamepads.AutoGamepad;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -37,6 +43,10 @@ public class RobotContainer {
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+
+  AutoGamepad driver = new AutoGamepad(0);
+
+  
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -68,10 +78,7 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(m_driverController, Button.kR1.value)
-        .whileTrue(new RunCommand(
-            () -> m_robotDrive.setX(),
-            m_robotDrive));
+    driver.getBottomButton().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
   }
 
   /**
@@ -80,6 +87,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    /*)
     // Create config for trajectory
     TrajectoryConfig config = new TrajectoryConfig(
         AutoConstants.kMaxSpeedMetersPerSecond,
@@ -118,5 +126,18 @@ public class RobotContainer {
 
     // Run path following command, then stop at the end.
     return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
+    */
+    PathPlannerPath path = PathPlannerPath.fromPathFile("testPath");
+    // Create a path following command using AutoBuilder. This will also trigger event markers.
+    Command moveForward = AutoBuilder.followPathWithEvents(path);
+
+    Pose2d startingPose = path.getPreviewStartingHolonomicPose();
+
+    InstantCommand resetPose = new InstantCommand(
+            () -> m_robotDrive.resetOdometry(startingPose)
+        );
+    Command autoCommand = new SequentialCommandGroup(resetPose, moveForward);
+    
+    return autoCommand;
   }
 }
