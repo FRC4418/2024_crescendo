@@ -3,6 +3,7 @@
   "robotLength": 0.61,
   "holonomicMode": true,
   "pathFolders": [
+    "PIDTest",
     "R3P"
   ],
   "autoFolders": [],
