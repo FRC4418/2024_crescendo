@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.stuypulse.stuylib.input.gamepads.AutoGamepad;
 
@@ -127,7 +128,7 @@ public class RobotContainer {
     // Run path following command, then stop at the end.
     return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
     */
-    PathPlannerPath path = PathPlannerPath.fromPathFile("move forward");
+    PathPlannerPath path = PathPlannerPath.fromPathFile("pidTestRot");
     // Create a path following command using AutoBuilder. This will also trigger event markers.
     Command moveForward = AutoBuilder.followPathWithEvents(path);
 
@@ -136,7 +137,9 @@ public class RobotContainer {
     InstantCommand resetPose = new InstantCommand(
             () -> m_robotDrive.resetOdometry(startingPose)
         );
-    Command autoCommand = new SequentialCommandGroup(resetPose, moveForward);
+
+    Command pidTest = new PathPlannerAuto("pidTest");
+    Command autoCommand = new SequentialCommandGroup(resetPose, pidTest);
     
     return autoCommand;
   }
