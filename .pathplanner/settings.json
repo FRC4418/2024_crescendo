@@ -4,6 +4,7 @@
   "holonomicMode": true,
   "pathFolders": [
     "C4PBlue",
+    "L5PBlue",
     "PIDTest",
     "R3PBlue"
   ],
