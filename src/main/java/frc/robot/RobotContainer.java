@@ -128,7 +128,7 @@ public class RobotContainer {
     // Run path following command, then stop at the end.
     return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
     */
-    PathPlannerPath path = PathPlannerPath.fromPathFile("Path1");
+    PathPlannerPath path = PathPlannerPath.fromPathFile("C4P1");
     // Create a path following command using AutoBuilder. This will also trigger event markers.
     Command moveForward = AutoBuilder.followPathWithEvents(path);
 
@@ -141,7 +141,7 @@ public class RobotContainer {
             () -> m_robotDrive.zeroHeading()
         );
 
-    Command pidTest = new PathPlannerAuto("R3P");
+    Command pidTest = new PathPlannerAuto("C4P");
     Command autoCommand = new SequentialCommandGroup(resetHeading, resetPose, pidTest);
     
     return autoCommand;

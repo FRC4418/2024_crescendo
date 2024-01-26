@@ -3,6 +3,7 @@
   "robotLength": 0.61,
   "holonomicMode": true,
   "pathFolders": [
+    "C4P",
     "PIDTest",
     "R3P"
   ],
@@ -11,5 +12,5 @@
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
-  "maxModuleSpeed": 3
+  "maxModuleSpeed": 4.5
 }
