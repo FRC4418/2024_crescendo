@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.56,
-        "y": 6.71
+        "x": 1.177071978473117,
+        "y": 5.609930647410491
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5588997188727838,
-        "y": 5.551187918118234
+        "x": 1.9994701885647073,
+        "y": 6.153300893363863
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.4547263405796946,
-        "y": 5.551187918118234
+        "x": 2.557526116841143,
+        "y": 6.711356821640298
       },
       "prevControl": {
-        "x": 1.2358147077653734,
-        "y": 5.609930647410491
+        "x": 1.6910708597803608,
+        "y": 5.933015658517901
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,9 +30,9 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.3,
-      "rotationDegrees": 0,
-      "rotateFast": true
+      "waypointRelativePos": 0.6,
+      "rotationDegrees": 39.47,
+      "rotateFast": false
     }
   ],
   "constraintZones": [],
@@ -45,14 +45,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 39.472459848343746,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "C4P",
-  "previewStartingState": {
-    "rotation": 39.47,
-    "velocity": 0
-  },
+  "folder": "C4PBlue",
+  "previewStartingState": null,
   "useDefaultConstraints": false
 }

@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.177071978473117,
-      "y": 5.609930647410491
+      "x": 0.7365015087811937,
+      "y": 4.611304249442131
     },
-    "rotation": 0
+    "rotation": -61.38954033403476
   },
   "command": {
     "type": "sequential",
@@ -20,7 +20,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "C4P1"
+            "pathName": "R3P1B"
           }
         },
         {
@@ -32,24 +32,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "C4P2"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "C4P3"
+            "pathName": "R3P2B"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "BlueSide",
   "choreoAuto": false
 }

@@ -3,11 +3,14 @@
   "robotLength": 0.61,
   "holonomicMode": true,
   "pathFolders": [
-    "C4P",
+    "C4PBlue",
     "PIDTest",
-    "R3P"
+    "R3PBlue"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "BlueSide",
+    "RedSide"
+  ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
