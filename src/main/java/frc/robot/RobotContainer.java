@@ -30,7 +30,7 @@ import java.util.List;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.stuypulse.stuylib.input.gamepads.AutoGamepad;
+//import com.stuypulse.stuylib.input.gamepads.AutoGamepad;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -45,7 +45,7 @@ public class RobotContainer {
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
 
-  AutoGamepad driver = new AutoGamepad(0);
+  //AutoGamepad driver = new AutoGamepad(0);
 
   
 
@@ -65,7 +65,7 @@ public class RobotContainer {
                 -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
-                true, true),
+                false, true),
             m_robotDrive));
   }
 
@@ -79,7 +79,7 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    driver.getBottomButton().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
+    //driver.getBottomButton().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
   }
 
   /**
@@ -128,7 +128,7 @@ public class RobotContainer {
     // Run path following command, then stop at the end.
     return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
     */
-    PathPlannerPath path = PathPlannerPath.fromPathFile("pidTestRot");
+    PathPlannerPath path = PathPlannerPath.fromPathFile("Path1");
     // Create a path following command using AutoBuilder. This will also trigger event markers.
     Command moveForward = AutoBuilder.followPathWithEvents(path);
 
@@ -137,9 +137,12 @@ public class RobotContainer {
     InstantCommand resetPose = new InstantCommand(
             () -> m_robotDrive.resetOdometry(startingPose)
         );
+    InstantCommand resetHeading = new InstantCommand(
+            () -> m_robotDrive.zeroHeading()
+        );
 
-    Command pidTest = new PathPlannerAuto("pidTest");
-    Command autoCommand = new SequentialCommandGroup(resetPose, pidTest);
+    Command pidTest = new PathPlannerAuto("R3P");
+    Command autoCommand = new SequentialCommandGroup(resetHeading, resetPose, pidTest);
     
     return autoCommand;
   }

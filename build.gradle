@@ -8,11 +8,6 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-allprojects {
-    repositories {
-        maven { url 'https://jitpack.io' }
-    }
-}
 
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
@@ -78,7 +73,6 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 
-    implementation 'com.github.StuyPulse:StuyLib:2024.1.2'
 }
 
 
