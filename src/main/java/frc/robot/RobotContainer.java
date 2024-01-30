@@ -103,8 +103,12 @@ public class RobotContainer {
     InstantCommand speedGoDown = new InstantCommand(
              () -> speed -= speedChange
         );
+    if(speed != 1.0){
     m_CommandXboxController.povUp().onTrue(speedGoUp);
+    }
+    if(speed != 0.0){
     m_CommandXboxController.povDown().onTrue(speedGoDown);
+    }
   }
 
   /**
