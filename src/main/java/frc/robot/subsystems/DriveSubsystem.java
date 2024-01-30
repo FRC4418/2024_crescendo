@@ -88,8 +88,8 @@ public class DriveSubsystem extends SubsystemBase {
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
                         new PIDConstants(2.5, 0, 0.2), // Translation PID constants
                         new PIDConstants(1.2, 0.0, 0.3), // Rotation PID constants
-                        5, // Max module speed, in m/s
-                        Math.sqrt(Math.pow(Units.inchesToMeters(20.5), 2)+Math.pow(Units.inchesToMeters(20.5),2))/2, // Drive base radius in meters. Distance from robot center to furthest module.
+                        5.0d, // Max module speed, in m/s
+                        DriveConstants.robotRadius, // Drive base radius in meters. Distance from robot center to furthest module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
                 ),
                 () -> {

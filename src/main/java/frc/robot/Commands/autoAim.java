@@ -15,7 +15,7 @@ public class autoAim extends Command {
   private VisionSubsystem visionSubsystem;
 
   final double ANGULAR_P = 0.1;
-  final double ANGULAR_D = 0.0;
+  final double ANGULAR_D = 0;
   PIDController turnController = new PIDController(ANGULAR_P, 0, ANGULAR_D);
 
   public autoAim(DriveSubsystem driveSubsystem, VisionSubsystem visionSubsystem) {
@@ -32,7 +32,7 @@ public class autoAim extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    driveSubsystem.drive(0, 0, getRotSpeed(), false, true);
+    driveSubsystem.drive(0, 0, getRotSpeed()/8.4, false, true);
   }
 
   private double getRotSpeed(){
@@ -42,7 +42,7 @@ public class autoAim extends Command {
       return 0;
     }
 
-    return -turnController.calculate(result.getBestTarget().getYaw(), 0);
+    return turnController.calculate(result.getBestTarget().getYaw(), 0);
   }
 
   // Called once the command ends or is interrupted.
