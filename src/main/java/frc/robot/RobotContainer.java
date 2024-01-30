@@ -55,6 +55,7 @@ public class RobotContainer {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
     private Shooter shooter = new Shooter();
     public double speed = 1;
+    public double speedChange = 0.02;
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   CommandXboxController m_CommandXboxController = new CommandXboxController(0);
@@ -96,6 +97,14 @@ public class RobotContainer {
     //driver.getBottomButton().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
     m_CommandXboxController.rightBumper().whileTrue(new ShooterspinClockwise(shooter, speed));
     m_CommandXboxController.leftBumper().whileTrue(new ShooterspinCounterclockwise(shooter, speed));
+    InstantCommand speedGoUp = new InstantCommand(
+            () -> speed += speedChange
+        );
+    InstantCommand speedGoDown = new InstantCommand(
+             () -> speed -= speedChange
+        );
+    m_CommandXboxController.povUp().onTrue(speedGoUp);
+    m_CommandXboxController.povDown().onTrue(speedGoDown);
   }
 
   /**

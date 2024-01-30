@@ -24,6 +24,7 @@ public class Shooter extends SubsystemBase {
 
   public void spinRollers(double speed){
     rollerMotor1.set(speed);
+    rollerMotor2.set(speed);
   }
     
   @Override
