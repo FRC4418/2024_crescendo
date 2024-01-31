@@ -10,7 +10,7 @@ import frc.robot.subsystems.Shooter;
 public class ShooterspinClockwise extends CommandBase {
   /** Creates a new rollerSpinClockwise. */
   private Shooter shooter;
-  private double localspeed;
+  public double localspeed;
   public ShooterspinClockwise(Shooter shooter, double speed) {
     this.shooter = shooter;
     this.localspeed = speed;
@@ -25,7 +25,7 @@ public class ShooterspinClockwise extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.spinRollers(localspeed);
+    shooter.spinRollers(localspeed/100);
   }
 
   // Called once the command ends or is interrupted.

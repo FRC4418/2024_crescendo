@@ -16,8 +16,8 @@ public class Shooter extends SubsystemBase {
   private final TalonFX rollerMotor2;
   public Shooter() {
     // Replace device number
-    rollerMotor1 = new TalonFX(1);
-    rollerMotor2 = new TalonFX(2);
+    rollerMotor1 = new TalonFX(100);
+    rollerMotor2 = new TalonFX(200);
     rollerMotor1.setInverted(false);
     rollerMotor2.setInverted(false);
   }

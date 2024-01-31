@@ -54,11 +54,14 @@ public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
     private Shooter shooter = new Shooter();
-    public double speed = 1;
-    public double speedChange = 0.02;
+    public int speed = 80;
+    public int speedChange = 2;
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   CommandXboxController m_CommandXboxController = new CommandXboxController(0);
+  ShooterspinClockwise shooterspinClockwise = new ShooterspinClockwise(shooter, speed);
+  ShooterspinCounterclockwise shooterspinCounterclockwise = new ShooterspinCounterclockwise(shooter, speed);
+
 
   //AutoGamepad driver = new AutoGamepad(0);
 
@@ -93,21 +96,30 @@ public class RobotContainer {
    * passing it to a
    * {@link JoystickButton}.
    */
-  private void configureButtonBindings() {
+  private void configureButtonBindings() {    
+
     //driver.getBottomButton().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
-    m_CommandXboxController.rightBumper().whileTrue(new ShooterspinClockwise(shooter, speed));
-    m_CommandXboxController.leftBumper().whileTrue(new ShooterspinCounterclockwise(shooter, speed));
-    InstantCommand speedGoUp = new InstantCommand(
-            () -> speed += speedChange
+    m_CommandXboxController.rightBumper().whileTrue(shooterspinClockwise);
+    m_CommandXboxController.leftBumper().whileTrue(shooterspinCounterclockwise);
+    InstantCommand clockwiseSpeedGoUp = new InstantCommand(
+            () -> shooterspinClockwise.localspeed += speedChange
         );
-    InstantCommand speedGoDown = new InstantCommand(
-             () -> speed -= speedChange
+    InstantCommand clockwiseSpeedGoDown = new InstantCommand(
+             () -> shooterspinClockwise.localspeed -= speedChange
         );
-    if(speed != 1.0){
-    m_CommandXboxController.povUp().onTrue(speedGoUp);
+    InstantCommand counterClockwiseSpeedGoUp = new InstantCommand(
+            () -> shooterspinCounterclockwise.localspeed += speedChange
+        );
+    InstantCommand counterClockwiseSpeedGoDown = new InstantCommand(
+             () -> shooterspinCounterclockwise.localspeed -= speedChange
+        );
+    if(speed != 100){
+    m_CommandXboxController.povUp().onTrue(clockwiseSpeedGoUp);
+    m_CommandXboxController.povUp().onTrue(counterClockwiseSpeedGoUp);
     }
-    if(speed != 0.0){
-    m_CommandXboxController.povDown().onTrue(speedGoDown);
+    if(speed != 0){
+    m_CommandXboxController.povDown().onTrue(clockwiseSpeedGoDown);
+    m_CommandXboxController.povDown().onTrue(counterClockwiseSpeedGoDown);
     }
   }
 
