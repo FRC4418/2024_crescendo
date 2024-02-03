@@ -32,7 +32,7 @@ public class autoAim extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    driveSubsystem.drive(0, 0, getRotSpeed()/8.4, false, true);
+    driveSubsystem.drive(0, 0, getRotSpeed()/8.4, false, false);
   }
 
   private double getRotSpeed(){
