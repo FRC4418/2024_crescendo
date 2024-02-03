@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -36,6 +37,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 //import com.stuypulse.stuylib.input.gamepads.AutoGamepad;
+import com.pathplanner.lib.path.PathPoint;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -96,7 +98,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    /*)
+    
     // Create config for trajectory
     TrajectoryConfig config = new TrajectoryConfig(
         AutoConstants.kMaxSpeedMetersPerSecond,
@@ -134,11 +136,16 @@ public class RobotContainer {
     m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
 
     // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
-    */
-    PathPlannerPath path = PathPlannerPath.fromPathFile("R3P1B");
-    // Create a path following command using AutoBuilder. This will also trigger event markers.
-    Command moveForward = AutoBuilder.followPathWithEvents(path);
+    if(0==0) return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
+    
+    PathPlannerPath path = PathPlannerPath.fromPathFile("pidTestStopStart");
+
+    PathPoint point = path.getPoint(0);
+
+    
+    
+      // Create a path following command using AutoBuilder. This will also trigger event markers.
+    //Command movekkkkkkkkkkkkkkkkkkForward = AutoBuilder.followPathWithEvents(path);
 
     Pose2d startingPose = path.getPreviewStartingHolonomicPose();
 
@@ -149,12 +156,12 @@ public class RobotContainer {
             () -> m_robotDrive.zeroHeading()
         );
 
-    Command pidTest = new PathPlannerAuto("R3PBlue");
+    Command pidTest = new PathPlannerAuto("pidTest");
     Command autoCommand = new SequentialCommandGroup(resetHeading, resetPose, pidTest);
     
     //return autoCommand;
 
     //return new autoAim(m_robotDrive, m_VisionSubsystem);
-    return new InstantCommand();
+    return autoCommand;
   }
 }
