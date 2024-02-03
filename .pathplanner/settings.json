@@ -1,6 +1,6 @@
 {
-  "robotWidth": 0.61,
-  "robotLength": 0.61,
+  "robotWidth": 0.6477,
+  "robotLength": 0.65,
   "holonomicMode": true,
   "pathFolders": [
     "C4PBlue",
