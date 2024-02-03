@@ -19,6 +19,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -43,9 +44,10 @@ import com.pathplanner.lib.path.PathPlannerPath;
  */
 public class RobotContainer {
   // The robot's subsystems
-  private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  //private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
   // The driver's controller
+  public shooter shooter = new shooter();
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   CommandXboxController m_CommandXboxController = new CommandXboxController(0);
 
@@ -53,10 +55,11 @@ public class RobotContainer {
 
   
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
+  
+   //* The container for the robot. Contains subsystems, OI devices, and commands.
+   
   public RobotContainer() {
+    /* 
     // Configure the button bindings
     configureButtonBindings();
 
@@ -70,8 +73,10 @@ public class RobotContainer {
                 -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
                 true, true),
-            m_robotDrive));
-  }
+            m_robotDrive));*/ 
+            configureButtonBindings();
+            shooter.setDefaultCommand(new spinShooter(shooter, 0));
+        }
 
   /**
    * Use this method to define your button->command mappings. Buttons can be
@@ -84,7 +89,8 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     //driver.getBottomButton().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
-    m_CommandXboxController.a().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
+    //m_CommandXboxController.a().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
+    m_CommandXboxController.povDown().whileTrue(new spinShooter(shooter, 1));
   }
 
   /**
@@ -132,7 +138,7 @@ public class RobotContainer {
 
     // Run path following command, then stop at the end.
     return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
-    */
+    
     PathPlannerPath path = PathPlannerPath.fromPathFile("C4P1B");
     // Create a path following command using AutoBuilder. This will also trigger event markers.
     Command moveForward = AutoBuilder.followPathWithEvents(path);
@@ -149,6 +155,7 @@ public class RobotContainer {
     Command pidTest = new PathPlannerAuto("C4PBlue");
     Command autoCommand = new SequentialCommandGroup(resetHeading, resetPose, pidTest);
     
-    return autoCommand;
+    return autoCommand;*/
+    return new InstantCommand();
   }
 }
