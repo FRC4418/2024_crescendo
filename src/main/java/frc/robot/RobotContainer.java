@@ -46,7 +46,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
+  //private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -154,6 +154,7 @@ public class RobotContainer {
     
     //return autoCommand;
 
-    return new autoAim(m_robotDrive, m_VisionSubsystem);
+    //return new autoAim(m_robotDrive, m_VisionSubsystem);
+    return new InstantCommand();
   }
 }
