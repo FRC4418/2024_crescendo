@@ -158,13 +158,14 @@ public class RobotContainer {
 
     List<Translation2d> points = new ArrayList<Translation2d>();
 
-    List<Pose2d> pose2ds = new ArrayList<Pose2d>();
     
     List<State> states = new ArrayList<State>();
 
     List<PathPoint> pathPoints = pathPlannerPath.getAllPathPoints();
 
     PathPlannerTrajectory ppTraj = pathPlannerPath.getTrajectory(new ChassisSpeeds(), new Rotation2d());
+    
+    
 
     for (int i = 0; i < pathPoints.size(); i++) {
       //if (i==0 || i == pathPoints.size()-1) continue;
@@ -172,11 +173,16 @@ public class RobotContainer {
       points.add(pathPoint.position);
     }
 
+    states.add(ppStateToState(ppTraj.getInitialState()));
+
     for (com.pathplanner.lib.path.PathPlannerTrajectory.State ppState : ppTraj.getStates()){
-      edu.wpi.first.math.trajectory.Trajectory.State state = new State(ppState.timeSeconds,ppState.velocityMps,ppState.accelerationMpsSq,new Pose2d(ppState.positionMeters, new Rotation2d()),ppState.curvatureRadPerMeter);
+      edu.wpi.first.math.trajectory.Trajectory.State state = ppStateToState(ppState);
       states.add(state);
     }
-    
+
+    com.pathplanner.lib.path.PathPlannerTrajectory.State ppState = ppTraj.getEndState();
+
+    states.add(ppStateToState(ppState));
     
 
     // return TrajectoryGenerator.generateTrajectory(
@@ -186,12 +192,21 @@ public class RobotContainer {
     //     config
     // );
 
-    // List<Pose2d> ls = new ArrayList<Pose2d>();
-    // ls.add(pathPlannerPath.getPreviewStartingHolonomicPose());
-    // ls.add(endPose);
+    List<Pose2d> ls = new ArrayList<Pose2d>();
+    ls.add(pathPlannerPath.getPreviewStartingHolonomicPose());
+    ls.add(new Pose2d(points.get(points.size()-1), new Rotation2d()));
+
+
     Trajectory traj = new Trajectory(states);
-    System.out.println(traj.getTotalTimeSeconds());
-    return new Trajectory(states); //TrajectoryGenerator.generateTrajectory(ls, config);
+
+    
+
+    //return traj;
+    return TrajectoryGenerator.generateTrajectory(ls, config);
+  }
+
+  public State ppStateToState(com.pathplanner.lib.path.PathPlannerTrajectory.State ppState){
+    return new State(ppState.timeSeconds,ppState.velocityMps,ppState.accelerationMpsSq,ppState.getTargetHolonomicPose(),ppState.curvatureRadPerMeter);
   }
 
 
@@ -208,10 +223,10 @@ public class RobotContainer {
 
     TrajectoryConfig config = new TrajectoryConfig(
         AutoConstants.kMaxSpeedMetersPerSecond,
-        AutoConstants.kMaxAccelerationMetersPerSecondSquared);
-        // Add kinematics to ensure max speed is actually obeyed
-    //     .setKinematics(DriveConstants.kDriveKinematics
-    // );
+        AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+        //Add kinematics to ensure max speed is actually obeyed
+        .setKinematics(DriveConstants.kDriveKinematics
+    );
 
     Trajectory traj = pathPlanerToTrajectory(PathPlannerPath.fromPathFile(pathName), config);
 

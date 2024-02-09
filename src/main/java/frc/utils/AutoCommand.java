@@ -6,6 +6,7 @@ package frc.utils;
 
 import java.util.List;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 import java.util.ArrayList;
@@ -16,5 +17,17 @@ public class AutoCommand{
 
     public AutoCommand(){
 
+    }
+
+    public void addCommand(Command command){
+        auto.addCommands(command);
+    }
+
+    public void addPath(String pathName){
+        //todo
+    }
+
+    public Command getAuto(){
+        return auto;
     }
 }
