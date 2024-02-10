@@ -15,7 +15,6 @@ import java.util.ArrayList;
 
 /** Add your docs here. */
 public class AutoCommandBuilder{
-    List<Object> autoCommandUnbuilt = new ArrayList<Object>();
     SequentialCommandGroup autoCommand = new SequentialCommandGroup();
     DriveSubsystem m_robotDrive;
 
@@ -23,49 +22,20 @@ public class AutoCommandBuilder{
         this.m_robotDrive = m_robotDrive;
     }
 
-    public void addPair(String pathName, Command command){
-        addCommand(AutoUtils.getCommandFromPathName(pathName, m_robotDrive).alongWith(command));
+    public void addPair(String pathName, boolean firstPath, Command command){
+        addCommand(AutoUtils.getCommandFromPathName(pathName, m_robotDrive, firstPath).alongWith(command));
     }
 
     public void addCommand(Command command){
-        autoCommandUnbuilt.add(command);
+        autoCommand.addCommands(command);
     }
 
-    public void addPath(String pathName){
-        autoCommandUnbuilt.add(pathName);
-    }
-
-    public String toString(){
-        String str = new String();
-
-        for(Object obj : autoCommandUnbuilt){
-            str = str + obj.toString() + "\n";
-        }
-
-        return str;
+    public void addPath(String pathName,boolean firstPath){
+        autoCommand.addCommands(AutoUtils.getCommandFromPathName(pathName, m_robotDrive, firstPath));
     }
 
     public Command getAuto()
     {
-        for (Object obj : autoCommandUnbuilt)
-        {
-            try
-            {
-                autoCommand.addCommands(AutoUtils.getCommandFromPathName((String)obj, m_robotDrive));
-            } catch(Exception e)
-            {
-                System.out.println("wassup");
-            }
-
-            try 
-            {
-                autoCommand.addCommands((Command) obj);
-            } catch (Exception e) 
-            {
-                System.out.println("hi");
-            }
-        }
-
         return autoCommand;
     }
 }

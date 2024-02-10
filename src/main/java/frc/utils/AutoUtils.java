@@ -88,8 +88,7 @@ public class AutoUtils
         return new State(ppState.timeSeconds,ppState.velocityMps,ppState.accelerationMpsSq,ppState.getTargetHolonomicPose(),ppState.curvatureRadPerMeter);
     }
 
-
-    public static Command getCommandFromPathName(String pathName, DriveSubsystem m_robotDrive){
+    public static Command getCommandFromPathName(String pathName, DriveSubsystem m_robotDrive, boolean firstRun){
 
         //PathPlannerTrajectory ppTraj = PathPlannerPath.fromPathFile(pathName).getTrajectory(new ChassisSpeeds(), new Rotation2d());
 
@@ -145,7 +144,7 @@ public class AutoUtils
         );
 
         // System.out.println("Init pose = " + traj.getInitialPose() + "total time = " + traj.getTotalTimeSeconds() + "states = " + traj.getStates());
-
+        if(!firstRun) return drive;
         return new SequentialCommandGroup(resetHeading, resetPose, drive);
     }
 

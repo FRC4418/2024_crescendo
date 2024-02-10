@@ -146,7 +146,7 @@ public class RobotContainer {
 
     //return AutoUtils.getCommandFromPathName("New Path", m_robotDrive);
     AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
-    AutoBuilder.addPath("New Path");
+    AutoBuilder.addPath("New Path", true);
     return AutoBuilder.getAuto();
   }
 }
