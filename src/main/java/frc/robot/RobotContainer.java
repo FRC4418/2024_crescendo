@@ -18,6 +18,10 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commads.ArmDefaultCommand;
+import frc.robot.commads.ArmIntake;
+import frc.robot.commads.ArmSpeaker;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -43,10 +47,11 @@ import com.pathplanner.lib.path.PathPlannerPath;
  */
 public class RobotContainer {
   // The robot's subsystems
-  private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  //private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final Arm arm = new Arm();
 
   // The driver's controller
-  XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+  //XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   CommandXboxController m_CommandXboxController = new CommandXboxController(0);
 
   //AutoGamepad driver = new AutoGamepad(0);
@@ -61,16 +66,17 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Configure default commands
-    m_robotDrive.setDefaultCommand(
-        // The left stick controls translation of the robot.
-        // Turning is controlled by the X axis of the right stick.
-        new RunCommand(
-            () -> m_robotDrive.drive(
-                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
-                true, true),
-            m_robotDrive));
+    // m_robotDrive.setDefaultCommand(
+    //     // The left stick controls translation of the robot.
+    //     // Turning is controlled by the X axis of the right stick.
+    //     new RunCommand(
+    //         () -> m_robotDrive.drive(
+    //             -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+    //             -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+    //             -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
+    //             true, true),
+    //         m_robotDrive));
+    arm.setDefaultCommand(new ArmDefaultCommand(arm));
   }
 
   /**
@@ -84,7 +90,9 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     //driver.getBottomButton().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
-    m_CommandXboxController.a().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
+    //m_CommandXboxController.a().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
+    m_CommandXboxController.povUp().whileTrue(new ArmIntake(arm));
+    m_CommandXboxController.povDown().whileTrue(new ArmSpeaker(arm));
   }
 
   /**
@@ -133,22 +141,24 @@ public class RobotContainer {
     // Run path following command, then stop at the end.
     return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
     */
-    PathPlannerPath path = PathPlannerPath.fromPathFile("C4P1B");
-    // Create a path following command using AutoBuilder. This will also trigger event markers.
-    Command moveForward = AutoBuilder.followPathWithEvents(path);
+    // PathPlannerPath path = PathPlannerPath.fromPathFile("C4P1B");
+    // // Create a path following command using AutoBuilder. This will also trigger event markers.
+    // Command moveForward = AutoBuilder.followPathWithEvents(path);
 
-    Pose2d startingPose = path.getPreviewStartingHolonomicPose();
+    // Pose2d startingPose = path.getPreviewStartingHolonomicPose();
 
-    InstantCommand resetPose = new InstantCommand(
-            () -> m_robotDrive.resetOdometry(startingPose)
-        );
-    InstantCommand resetHeading = new InstantCommand(
-            () -> m_robotDrive.zeroHeading()
-        );
+    // InstantCommand resetPose = new InstantCommand(
+    //         () -> m_robotDrive.resetOdometry(startingPose)
+    //     );
+    // InstantCommand resetHeading = new InstantCommand(
+    //         () -> m_robotDrive.zeroHeading()
+    //     );
 
-    Command pidTest = new PathPlannerAuto("C4PBlue");
-    Command autoCommand = new SequentialCommandGroup(resetHeading, resetPose, pidTest);
+    // Command pidTest = new PathPlannerAuto("C4PBlue");
+    // Command autoCommand = new SequentialCommandGroup(resetHeading, resetPose, pidTest);
     
-    return autoCommand;
+    // return autoCommand;
+
+    return new InstantCommand();
   }
 }

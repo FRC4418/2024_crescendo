@@ -139,4 +139,10 @@ public final class Constants {
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
   }
+  public static final class armPositions {
+    public static final double speaker = 100;
+    public static final double amp = 101;
+    public static final double trap = 111;
+    public static final double intake = 110;
+  }
 }
