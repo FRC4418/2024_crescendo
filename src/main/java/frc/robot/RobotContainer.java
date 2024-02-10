@@ -10,16 +10,21 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import frc.robot.Commands.autoAim;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.shooter;
+import frc.robot.subsystems.VisionSubsystem;
+import frc.utils.AutoCommandBuilder;
+import frc.utils.AutoUtils;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -29,13 +34,18 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
 //import com.stuypulse.stuylib.input.gamepads.AutoGamepad;
+import com.pathplanner.lib.path.PathPoint;
 
+
+import edu.wpi.first.math.trajectory.proto.TrajectoryStateProto;
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -44,10 +54,10 @@ import com.pathplanner.lib.path.PathPlannerPath;
  */
 public class RobotContainer {
   // The robot's subsystems
-  //private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  //private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
 
   // The driver's controller
-  public shooter shooter = new shooter();
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   CommandXboxController m_CommandXboxController = new CommandXboxController(0);
 
@@ -55,11 +65,10 @@ public class RobotContainer {
 
   
 
-  
-   //* The container for the robot. Contains subsystems, OI devices, and commands.
-   
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
-    /* 
     // Configure the button bindings
     configureButtonBindings();
 
@@ -73,10 +82,8 @@ public class RobotContainer {
                 -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
                 true, true),
-            m_robotDrive));*/ 
-            configureButtonBindings();
-            shooter.setDefaultCommand(new spinShooter(shooter, 0));
-        }
+            m_robotDrive));
+  }
 
   /**
    * Use this method to define your button->command mappings. Buttons can be
@@ -89,8 +96,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     //driver.getBottomButton().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
-    //m_CommandXboxController.a().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
-    m_CommandXboxController.povDown().whileTrue(new spinShooter(shooter, 1));
+    m_CommandXboxController.a().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
   }
 
   /**
@@ -99,14 +105,9 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    /*)
-    // Create config for trajectory
-    TrajectoryConfig config = new TrajectoryConfig(
-        AutoConstants.kMaxSpeedMetersPerSecond,
-        AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-        // Add kinematics to ensure max speed is actually obeyed
-        .setKinematics(DriveConstants.kDriveKinematics);
-
+    
+    // Create config for trajector
+/* 
     // An example trajectory to follow. All units in meters.
     Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction
@@ -116,46 +117,36 @@ public class RobotContainer {
         // End 3 meters straight ahead of where we started, facing forward
         new Pose2d(3, 0, new Rotation2d(0)),
         config);
-
-    var thetaController = new ProfiledPIDController(
-        AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-    SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-        exampleTrajectory,
-        m_robotDrive::getPose, // Functional interface to feed supplier
-        DriveConstants.kDriveKinematics,
-
-        // Position controllers
-        new PIDController(AutoConstants.kPXController, 0, 0),
-        new PIDController(AutoConstants.kPYController, 0, 0),
-        thetaController,
-        m_robotDrive::setModuleStates,
-        m_robotDrive);
+*/
 
     // Reset odometry to the starting pose of the trajectory.
-    m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
+    //m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
 
     // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
+        
+    //PathPlannerPath path = PathPlannerPath.fromPathFile("pidTestStopStart");
+
+    //PathPoint point = path.getPoint(0);
+
     
-    PathPlannerPath path = PathPlannerPath.fromPathFile("C4P1B");
-    // Create a path following command using AutoBuilder. This will also trigger event markers.
-    Command moveForward = AutoBuilder.followPathWithEvents(path);
-
-    Pose2d startingPose = path.getPreviewStartingHolonomicPose();
-
-    InstantCommand resetPose = new InstantCommand(
-            () -> m_robotDrive.resetOdometry(startingPose)
-        );
-    InstantCommand resetHeading = new InstantCommand(
-            () -> m_robotDrive.zeroHeading()
-        );
-
-    Command pidTest = new PathPlannerAuto("C4PBlue");
-    Command autoCommand = new SequentialCommandGroup(resetHeading, resetPose, pidTest);
     
-    return autoCommand;*/
-    return new InstantCommand();
+      // Create a path following command using AutoBuilder. This will also trigger event markers.
+    //Command movekkkkkkkkkkkkkkkkkkForward = AutoBuilder.followPathWithEvents(path);
+
+
+
+    
+    //return autoCommand;
+
+    //return new autoAim(m_robotDrive, m_VisionSubsystem);
+    
+
+
+
+
+    //return AutoUtils.getCommandFromPathName("New Path", m_robotDrive);
+    AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
+    AutoBuilder.addPath("New Path", true);
+    return AutoBuilder.getAuto();
   }
 }
