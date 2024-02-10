@@ -17,10 +17,10 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
-import frc.robot.Commands.autoAim;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commads.AutoStuff.Aim;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.utils.AutoCommandBuilder;
@@ -105,48 +105,15 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    
-    // Create config for trajector
-/* 
-    // An example trajectory to follow. All units in meters.
-    Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-        // Start at the origin facing the +X direction
-        new Pose2d(0, 0, new Rotation2d(0)),
-        // Pass through these two interior waypoints, making an 's' curve path
-        List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-        // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(3, 0, new Rotation2d(0)),
-        config);
-*/
-
-    // Reset odometry to the starting pose of the trajectory.
-    //m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
-
-    // Run path following command, then stop at the end.
-        
-    //PathPlannerPath path = PathPlannerPath.fromPathFile("pidTestStopStart");
-
-    //PathPoint point = path.getPoint(0);
-
-    
-    
-      // Create a path following command using AutoBuilder. This will also trigger event markers.
-    //Command movekkkkkkkkkkkkkkkkkkForward = AutoBuilder.followPathWithEvents(path);
-
-
-
-    
-    //return autoCommand;
-
-    //return new autoAim(m_robotDrive, m_VisionSubsystem);
-    
-
-
-
 
     //return AutoUtils.getCommandFromPathName("New Path", m_robotDrive);
     AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
     AutoBuilder.addPath("New Path", true);
+    AutoBuilder.addPath("New New Path", false);
+    AutoBuilder.addPath("New Path", false);    
+    AutoBuilder.addPath("New New Path", false);
+    AutoBuilder.addPath("New Path", false);    
+    AutoBuilder.addPath("New New Path", false);
     return AutoBuilder.getAuto();
   }
 }

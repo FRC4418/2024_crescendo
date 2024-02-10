@@ -48,8 +48,8 @@ public class AutoUtils
 
         for (int i = 0; i < pathPoints.size(); i++) {
         //if (i==0 || i == pathPoints.size()-1) continue;
-        PathPoint pathPoint = pathPoints.get(i);             //get all the points
-        points.add(pathPoint.position);
+            PathPoint pathPoint = pathPoints.get(i);             //get all the points
+            points.add(pathPoint.position);
         }
 
         states.add(ppStateToState(ppTraj.getInitialState()));
@@ -78,7 +78,7 @@ public class AutoUtils
 
         Trajectory traj = new Trajectory(states);
 
-        System.out.println(traj.getStates().toString());
+        //System.out.println(traj.getStates().toString());
 
         //return traj;
         return TrajectoryGenerator.generateTrajectory(ls, config);

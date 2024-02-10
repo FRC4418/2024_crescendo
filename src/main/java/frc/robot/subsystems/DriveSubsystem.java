@@ -66,7 +66,7 @@ public class DriveSubsystem extends SubsystemBase {
   private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
-  private double autoSpinSpeed = Math.PI;
+  public double autoSpinSpeed = Math.PI * 0.5;
 
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
@@ -257,7 +257,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void spinySetModuleStates(SwerveModuleState[] desiredStates){
     ChassisSpeeds chassisSpeeds = DriveConstants.kDriveKinematics.toChassisSpeeds(desiredStates);
-    chassisSpeeds.omegaRadiansPerSecond = Math.PI;
+    chassisSpeeds.omegaRadiansPerSecond = autoSpinSpeed;
     SwerveModuleState[] goodStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
     setModuleStates(goodStates);
   }
