@@ -8,10 +8,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.Arm;
 
-public class ArmIntake extends Command {
+public class ArmSpeaker extends Command {
   /** Creates a new ArmIntake. */
   private final Arm arm;
-  public ArmIntake(Arm arm) {
+  public ArmSpeaker(Arm arm) {
     this.arm = arm;
     addRequirements(arm);
     // Use addRequirements() here to declare subsystem dependencies.
@@ -19,12 +19,13 @@ public class ArmIntake extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    arm.goToPosition(Constants.armPositions.intake);
+    arm.goToPosition(Constants.armPositions.speaker);
   }
 
   // Called once the command ends or is interrupted.

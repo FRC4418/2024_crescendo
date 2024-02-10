@@ -15,8 +15,8 @@ import frc.robot.Constants;
 
 public class Arm extends SubsystemBase {
   /** Creates a new Arm. */
-  private final TalonFX armMaster = new TalonFX(0);
-  private final TalonFX armSlave = new TalonFX(1);
+  private final TalonFX armMaster = new TalonFX(20);
+  private final TalonFX armSlave = new TalonFX(22);
 
   private int peakVelocity = 1000;
   private double percentOfPeak = 0.75;
@@ -31,15 +31,15 @@ public class Arm extends SubsystemBase {
     var talonFXConfigs = new TalonFXConfiguration();
     var slot0Configs = talonFXConfigs.Slot0;
 
-    slot0Configs.kP = 0.06; // A position error of 2.5 rotations results in 12 V output
+    slot0Configs.kP = 0.4; // A position error of 2.5 rotations results in 12 V output
     slot0Configs.kI = 0; // no output for integrated error
-    slot0Configs.kD = 0.1; // A velocity error of 1 rps results in 0.1 V output
+    slot0Configs.kD = 0; // A velocity error of 1 rps results in 0.1 V output
 
 
     armMaster.getConfigurator().apply(talonFXConfigs);
     armSlave.getConfigurator().apply(talonFXConfigs);
     armMaster.setInverted(false);
-    armSlave.setInverted(false);
+    armSlave.setInverted(true);
 
     // armMaster.setSelectedSensorPosition(0);
 
@@ -63,7 +63,7 @@ public class Arm extends SubsystemBase {
 
     // armMaster.selectProfileSlot(0, 0);
 
-    // resetEncoder();
+    resetEncoder();
 
 
   }
@@ -77,9 +77,10 @@ public class Arm extends SubsystemBase {
     armMaster.set(0.0);
   }
 
-  // public void resetEncoder(){
-  //   armMaster.setSelectedSensorPosition(0);
-  // }
+   public void resetEncoder(){
+     armMaster.setPosition(0);
+     armSlave.setPosition(0);
+  }
 
   // public double getMasterPos(){
   //   return armMaster.getSelectedSensorPosition();
@@ -91,7 +92,7 @@ public class Arm extends SubsystemBase {
     System.out.println(position);
   }
 
-  @Override
+  
   public void periodic() {
     // This method will be called once per scheduler run
     System.out.println(armMaster.getPosition());
