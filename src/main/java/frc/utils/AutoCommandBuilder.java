@@ -23,6 +23,10 @@ public class AutoCommandBuilder{
         this.m_robotDrive = m_robotDrive;
     }
 
+    public void addPair(String pathName, Command command){
+        addCommand(AutoUtils.getCommandFromPathName(pathName, m_robotDrive).alongWith(command));
+    }
+
     public void addCommand(Command command){
         autoCommandUnbuilt.add(command);
     }
