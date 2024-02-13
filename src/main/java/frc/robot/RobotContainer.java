@@ -20,8 +20,11 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commads.IntakeShoot;
+import frc.robot.commads.NoteIntake;
 import frc.robot.commads.AutoStuff.Aim;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.utils.AutoCommandBuilder;
 import frc.utils.AutoUtils;
@@ -55,6 +58,7 @@ import edu.wpi.first.math.trajectory.proto.TrajectoryStateProto;
 public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final Intake intake = new Intake();
   //private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
 
   // The driver's controller
@@ -97,6 +101,9 @@ public class RobotContainer {
   private void configureButtonBindings() {
     //driver.getBottomButton().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
     m_CommandXboxController.a().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
+    // Idk the best way to control the arm, im not a driver
+    m_CommandXboxController.leftTrigger().whileTrue(new NoteIntake(intake));
+    m_CommandXboxController.rightTrigger().whileTrue(new IntakeShoot(intake));
   }
 
   /**
