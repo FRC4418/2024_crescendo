@@ -8,16 +8,16 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class shooter extends SubsystemBase {
+public class Shooter extends SubsystemBase {
   private TalonFX motor1 = new TalonFX(12);
   private TalonFX motor2 = new TalonFX(23);
 
   /** Creates a new shooter. */
-  public shooter() {}
+  public Shooter() {}
 
   public void spin(double speed){
     motor1.set(speed);
-    motor2.set(speed*.8);
+    motor2.set(speed);
   }
 
   @Override
