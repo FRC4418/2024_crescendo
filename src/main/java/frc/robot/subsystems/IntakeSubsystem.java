@@ -8,14 +8,12 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class shooter extends SubsystemBase {
-  private TalonFX motor1 = new TalonFX(10);
-  private TalonFX motor2 = new TalonFX(11);
+public class IntakeSubsystem extends SubsystemBase {
+  private TalonFX motor1 = new TalonFX(20);
+  private TalonFX motor2 = new TalonFX(21);
 
   /** Creates a new shooter. */
-  public shooter() {
-    motor1.setInverted(true);
-  }
+  public IntakeSubsystem() {}
 
   public void spin(double speed){
     motor1.set(speed);

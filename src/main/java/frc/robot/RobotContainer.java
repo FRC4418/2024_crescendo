@@ -20,9 +20,13 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commads.IntakeCommand;
+import frc.robot.commads.spinShooter;
 import frc.robot.commads.AutoStuff.Aim;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.shooter;
 import frc.utils.AutoCommandBuilder;
 import frc.utils.AutoUtils;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -55,6 +59,8 @@ import edu.wpi.first.math.trajectory.proto.TrajectoryStateProto;
 public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
+  private final shooter m_shooter = new shooter();
   //private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
 
   // The driver's controller
@@ -71,7 +77,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
-
+// /*
     // Configure default commands
     m_robotDrive.setDefaultCommand(
         // The left stick controls translation of the robot.
@@ -82,7 +88,7 @@ public class RobotContainer {
                 -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
                 true, true),
-            m_robotDrive));
+            m_robotDrive));  // */
   }
 
   /**
@@ -97,6 +103,16 @@ public class RobotContainer {
   private void configureButtonBindings() {
     //driver.getBottomButton().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
     m_CommandXboxController.a().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
+
+    m_IntakeSubsystem.setDefaultCommand(new IntakeCommand(m_IntakeSubsystem, 0));
+
+    m_shooter.setDefaultCommand(new spinShooter(m_shooter, 0));    
+
+
+    m_CommandXboxController.x().whileTrue(new IntakeCommand(m_IntakeSubsystem,1));    
+    
+    m_CommandXboxController.rightBumper().whileTrue(new spinShooter(m_shooter, 0.7));
+
   }
 
   /**
