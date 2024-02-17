@@ -92,6 +92,11 @@ public class Arm extends SubsystemBase {
     System.out.println(position);
   }
 
+  public void spin(double speed){
+    armMaster.set(speed);
+    armSlave.set(speed);
+  }
+
   
   public void periodic() {
     // This method will be called once per scheduler run

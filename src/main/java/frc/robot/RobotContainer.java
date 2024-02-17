@@ -20,9 +20,13 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commads.Intake.IntakeNote;
+import frc.robot.commads.Intake.IntakeShoot;
 import frc.robot.commads.Intake.IntakeSpit;
 import frc.robot.commads.Shooter.spinShooter;
+import frc.robot.commads.Arm.ArmDown;
 import frc.robot.commads.Arm.ArmToPosition;
+import frc.robot.commads.Arm.ArmUp;
 import frc.robot.commads.AutoStuff.Aim;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
@@ -116,6 +120,14 @@ public class RobotContainer {
 
     m_CommandXboxControllerManipulator.leftTrigger().whileTrue(new spinShooter(shooter, -1));
     m_CommandXboxControllerManipulator.rightTrigger().whileTrue(new spinShooter(shooter, 1));
+
+    m_CommandXboxControllerManipulator.x().onTrue(new InstantCommand(() -> {
+      if (intake.beamBreak.get()) { new IntakeShoot(intake);
+      } else { new IntakeNote(intake); } }));
+
+    m_CommandXboxControllerManipulator.leftBumper().whileTrue(new ArmDown(arm));
+    m_CommandXboxControllerManipulator.rightBumper().whileTrue(new ArmUp(arm));
+
 
 
     m_CommandXboxControllerDriver.a().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
