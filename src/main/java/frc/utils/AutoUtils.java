@@ -32,7 +32,7 @@ import frc.robot.subsystems.DriveSubsystem;
 /** Add your docs here. */
 public class AutoUtils 
 {
-    public static Trajectory pathPlanerToTrajectory(PathPlannerPath pathPlannerPath, TrajectoryConfig config)
+    public static Trajectory pathPlanerToTrajectory(PathPlannerPath pathPlannerPath, TrajectoryConfig config, boolean flipped)
     {
 
         List<Translation2d> points = new ArrayList<Translation2d>();
@@ -72,8 +72,19 @@ public class AutoUtils
         // );
 
         List<Pose2d> ls = new ArrayList<Pose2d>();
-        ls.add(pathPlannerPath.getPreviewStartingHolonomicPose());
-        ls.add(new Pose2d(points.get(points.size()-1), new Rotation2d()));
+        Pose2d start = pathPlannerPath.getPreviewStartingHolonomicPose();
+        Pose2d end = new Pose2d(points.get(points.size()-1), new Rotation2d());
+        if(flipped){
+            Translation2d pos = start.getTranslation();
+
+            start = new Pose2d(-pos.getX(), pos.getY(), start.getRotation());
+            Translation2d pos2 = end.getTranslation();
+
+            end = new Pose2d(-pos2.getX(), pos2.getY(), end.getRotation());
+        }
+
+        ls.add(start);
+        ls.add(end);
 
 
         Trajectory traj = new Trajectory(states);
@@ -88,7 +99,7 @@ public class AutoUtils
         return new State(ppState.timeSeconds,ppState.velocityMps,ppState.accelerationMpsSq,ppState.getTargetHolonomicPose(),ppState.curvatureRadPerMeter);
     }
 
-    public static Command getCommandFromPathName(String pathName, DriveSubsystem m_robotDrive, boolean firstRun){
+    public static Command getCommandFromPathName(String pathName, DriveSubsystem m_robotDrive, boolean firstRun, boolean flipped){
 
         //PathPlannerTrajectory ppTraj = PathPlannerPath.fromPathFile(pathName).getTrajectory(new ChassisSpeeds(), new Rotation2d());
 
@@ -106,7 +117,7 @@ public class AutoUtils
             .setKinematics(DriveConstants.kDriveKinematics
         );
 
-        Trajectory traj = pathPlanerToTrajectory(PathPlannerPath.fromPathFile(pathName), config);
+        Trajectory traj = pathPlanerToTrajectory(PathPlannerPath.fromPathFile(pathName), config, flipped);
 
         Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
             // Start at the origin facing the +X direction

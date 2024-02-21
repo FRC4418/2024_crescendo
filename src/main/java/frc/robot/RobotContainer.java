@@ -15,6 +15,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.Trajectory.State;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import frc.robot.Constants.AutoConstants;
@@ -109,9 +110,11 @@ public class RobotContainer {
     m_shooter.setDefaultCommand(new spinShooter(m_shooter, 0));    
 
 
-    m_CommandXboxController.x().whileTrue(new IntakeCommand(m_IntakeSubsystem,1));    
+    m_CommandXboxController.x().whileTrue(new IntakeCommand(m_IntakeSubsystem,1));   
     
-    m_CommandXboxController.rightBumper().whileTrue(new spinShooter(m_shooter, 0.7));
+    m_CommandXboxController.a().whileTrue(new IntakeCommand(m_IntakeSubsystem,-1));
+    
+    m_CommandXboxController.rightBumper().whileTrue(new spinShooter(m_shooter, 1));
 
   }
 
@@ -124,12 +127,17 @@ public class RobotContainer {
 
     //return AutoUtils.getCommandFromPathName("New Path", m_robotDrive);
     AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
-    AutoBuilder.addPath("New Path", true);
-    AutoBuilder.addPath("New New Path", false);
-    AutoBuilder.addPath("New Path", false);    
-    AutoBuilder.addPath("New New Path", false);
-    AutoBuilder.addPath("New Path", false);    
-    AutoBuilder.addPath("New New Path", false);
+    
+    AutoBuilder.addPath("New Path", true, flip());
     return AutoBuilder.getAuto();
+  }
+
+  public boolean flip(){
+    
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                    }
+                    return false;
   }
 }
