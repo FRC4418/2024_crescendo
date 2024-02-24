@@ -22,11 +22,13 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commads.Intake.IntakeNote;
 import frc.robot.commads.Intake.IntakeShoot;
+import frc.robot.commads.Intake.IntakeSpin;
 import frc.robot.commads.Intake.IntakeSpit;
 import frc.robot.commads.Shooter.spinShooter;
 import frc.robot.commads.Arm.ArmDown;
 import frc.robot.commads.Arm.ArmToPosition;
 import frc.robot.commads.Arm.ArmUp;
+import frc.robot.commads.Arm.armSet;
 import frc.robot.commads.AutoStuff.Aim;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
@@ -140,6 +142,17 @@ public class RobotContainer {
         fieldRelative, true), // pass fieldRelative as the last argument
       m_robotDrive)));
 
+    m_CommandXboxControllerDriver.povLeft().whileTrue(new IntakeSpin(intake, 1));
+    m_CommandXboxControllerDriver.povUp().onTrue(new ArmToPosition(arm, 5));
+    m_CommandXboxControllerDriver.povDown().onTrue(new ArmToPosition(arm, 0));
+
+    m_CommandXboxControllerDriver.y().whileTrue(new spinShooter(shooter, 1));
+    
+    // m_CommandXboxControllerDriver.povUp().whileTrue(new armSet(arm, 0.5));
+    m_CommandXboxControllerDriver.b().onTrue(new InstantCommand(() -> arm.resetEncoder()));
+    arm.setDefaultCommand(new armSet(arm, 0));
+    intake.setDefaultCommand(new IntakeSpin(intake, 0));
+    shooter.setDefaultCommand(new spinShooter(shooter, 0));
   }
 
   /**

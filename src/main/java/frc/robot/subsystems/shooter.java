@@ -9,8 +9,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
-  private TalonFX motor1 = new TalonFX(12);
-  private TalonFX motor2 = new TalonFX(23);
+  private TalonFX motor1 = new TalonFX(10);
+  private TalonFX motor2 = new TalonFX(11);
 
   /** Creates a new shooter. */
   public Shooter() {}

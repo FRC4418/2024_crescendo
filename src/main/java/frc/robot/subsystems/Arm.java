@@ -15,8 +15,8 @@ import frc.robot.Constants;
 
 public class Arm extends SubsystemBase {
   /** Creates a new Arm. */
-  private final TalonFX armMaster = new TalonFX(20);
-  private final TalonFX armSlave = new TalonFX(22);
+  private final TalonFX armMaster = new TalonFX(31);
+  private final TalonFX armSlave = new TalonFX(30);
 
   private int peakVelocity = 1000;
   private double percentOfPeak = 0.75;
@@ -26,6 +26,9 @@ public class Arm extends SubsystemBase {
   final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
 
   public Arm() {
+
+    armMaster.setNeutralMode(NeutralModeValue.Brake);
+    armSlave.setNeutralMode(NeutralModeValue.Brake);
 
 
     var talonFXConfigs = new TalonFXConfiguration();
@@ -39,7 +42,7 @@ public class Arm extends SubsystemBase {
     armMaster.getConfigurator().apply(talonFXConfigs);
     armSlave.getConfigurator().apply(talonFXConfigs);
     armMaster.setInverted(false);
-    armSlave.setInverted(true);
+    armSlave.setInverted(false);
 
     // armMaster.setSelectedSensorPosition(0);
 
@@ -97,9 +100,13 @@ public class Arm extends SubsystemBase {
     armSlave.set(speed);
   }
 
+  public double getArmPos(){
+    return armMaster.getPosition().getValueAsDouble();
+  }
+
   
   public void periodic() {
     // This method will be called once per scheduler run
-    System.out.println(armMaster.getPosition());
+    System.out.println(armMaster.getRotorPosition().getValueAsDouble());
   }
 }
