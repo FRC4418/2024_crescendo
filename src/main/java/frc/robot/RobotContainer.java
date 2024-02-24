@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commads.Intake.IntakeMove;
 import frc.robot.commads.Intake.IntakeNote;
 import frc.robot.commads.Intake.IntakeShoot;
 import frc.robot.commads.Intake.IntakeSpin;
@@ -30,6 +31,7 @@ import frc.robot.commads.Arm.ArmToPosition;
 import frc.robot.commads.Arm.ArmUp;
 import frc.robot.commads.Arm.armSet;
 import frc.robot.commads.AutoStuff.Aim;
+import frc.robot.commads.AutoStuff.ShooterSpinTime;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Intake;
@@ -39,6 +41,7 @@ import frc.utils.AutoCommandBuilder;
 import frc.utils.AutoUtils;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -113,23 +116,22 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     //driver.getBottomButton().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
-    m_CommandXboxControllerManipulator.povUp().onTrue(new ArmToPosition(arm, Constants.armPositions.Position1));
-    m_CommandXboxControllerManipulator.povLeft().onTrue(new ArmToPosition(arm, Constants.armPositions.Position2));
-    m_CommandXboxControllerManipulator.povRight().onTrue(new ArmToPosition(arm, Constants.armPositions.Position3));
-    m_CommandXboxControllerManipulator.povDown().onTrue(new ArmToPosition(arm, Constants.armPositions.Position4));
+    m_CommandXboxControllerManipulator.povUp().onTrue(new ArmToPosition(arm, 30));
+    m_CommandXboxControllerManipulator.povLeft().onTrue(new ArmToPosition(arm, 15));
+    m_CommandXboxControllerManipulator.povRight().onTrue(new ArmToPosition(arm, 5));
+    m_CommandXboxControllerManipulator.povDown().onTrue(new ArmToPosition(arm, 0));
 
-    m_CommandXboxControllerManipulator.b().whileTrue(new IntakeSpit(intake));
+    m_CommandXboxControllerManipulator.b().onTrue(new IntakeMove(intake, 0.1, 0.2));
 
     m_CommandXboxControllerManipulator.leftTrigger().whileTrue(new spinShooter(shooter, -1));
     m_CommandXboxControllerManipulator.rightTrigger().whileTrue(new spinShooter(shooter, 1));
 
-    m_CommandXboxControllerManipulator.x().onTrue(new InstantCommand(() -> {
-      if (intake.beamBreak.get()) { new IntakeShoot(intake);
-      } else { new IntakeNote(intake); } }));
+    m_CommandXboxControllerManipulator.x().whileTrue(new IntakeSpin(intake, 1));
 
     m_CommandXboxControllerManipulator.leftBumper().whileTrue(new ArmDown(arm));
     m_CommandXboxControllerManipulator.rightBumper().whileTrue(new ArmUp(arm));
 
+    m_CommandXboxControllerManipulator.y().whileTrue(new InstantCommand(() -> arm.resetEncoder()));
 
 
     m_CommandXboxControllerDriver.a().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
@@ -143,13 +145,15 @@ public class RobotContainer {
       m_robotDrive)));
 
     m_CommandXboxControllerDriver.povLeft().whileTrue(new IntakeSpin(intake, 1));
-    m_CommandXboxControllerDriver.povUp().onTrue(new ArmToPosition(arm, 5));
+    m_CommandXboxControllerDriver.povUp().onTrue(new ArmToPosition(arm, 1));
     m_CommandXboxControllerDriver.povDown().onTrue(new ArmToPosition(arm, 0));
+    m_CommandXboxControllerDriver.povRight().onTrue(new IntakeMove(intake, 0.1, 0.2));
+
 
     m_CommandXboxControllerDriver.y().whileTrue(new spinShooter(shooter, 1));
     
     // m_CommandXboxControllerDriver.povUp().whileTrue(new armSet(arm, 0.5));
-    m_CommandXboxControllerDriver.b().onTrue(new InstantCommand(() -> arm.resetEncoder()));
+    m_CommandXboxControllerDriver.b().whileTrue(new InstantCommand(() -> arm.resetEncoder()));
     arm.setDefaultCommand(new armSet(arm, 0));
     intake.setDefaultCommand(new IntakeSpin(intake, 0));
     shooter.setDefaultCommand(new spinShooter(shooter, 0));
@@ -164,12 +168,18 @@ public class RobotContainer {
 
     //return AutoUtils.getCommandFromPathName("New Path", m_robotDrive);
     AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
-    AutoBuilder.addPath("New Path", true);
-    AutoBuilder.addPath("New New Path", false);
-    AutoBuilder.addPath("New Path", false);    
-    AutoBuilder.addPath("New New Path", false);
-    AutoBuilder.addPath("New Path", false);    
-    AutoBuilder.addPath("New New Path", false);
+
+    Command rev = new ShooterSpinTime(shooter, 0.5);
+
+    Command shoot = new ParallelCommandGroup(new IntakeMove(intake, 0.5, -1), new ShooterSpinTime(shooter, 0.5));
+
+
+    AutoBuilder.addCommand(rev);
+
+    AutoBuilder.addCommand(shoot);
+
+    //AutoBuilder.addPath("New Path", true);
+
     return AutoBuilder.getAuto();
   }
 }

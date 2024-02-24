@@ -92,7 +92,7 @@ public class Arm extends SubsystemBase {
   public void goToPosition(double position){
     armMaster.setControl(m_request.withPosition(position).withFeedForward(0.5));
     armSlave.setControl(m_request.withPosition(position).withFeedForward(0.5));
-    System.out.println(position);
+    //System.out.println(position);
   }
 
   public void spin(double speed){
@@ -107,6 +107,6 @@ public class Arm extends SubsystemBase {
   
   public void periodic() {
     // This method will be called once per scheduler run
-    System.out.println(armMaster.getRotorPosition().getValueAsDouble());
+    //System.out.println(armMaster.getRotorPosition().getValueAsDouble());
   }
 }
