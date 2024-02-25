@@ -28,6 +28,7 @@ import frc.robot.commads.Intake.IntakeSpit;
 import frc.robot.commads.Shooter.spinShooter;
 import frc.robot.commads.Arm.ArmDown;
 import frc.robot.commads.Arm.ArmToPosition;
+import frc.robot.commads.Arm.ArmToPositionAuto;
 import frc.robot.commads.Arm.ArmUp;
 import frc.robot.commads.Arm.armSet;
 import frc.robot.commads.AutoStuff.Aim;
@@ -121,7 +122,7 @@ public class RobotContainer {
     m_CommandXboxControllerManipulator.povRight().onTrue(new ArmToPosition(arm, 5));
     m_CommandXboxControllerManipulator.povDown().onTrue(new ArmToPosition(arm, 0));
 
-    m_CommandXboxControllerManipulator.b().onTrue(new IntakeMove(intake, 0.1, 0.2));
+    m_CommandXboxControllerManipulator.b().onTrue(new IntakeMove(intake, 0.1, -0.2));
 
     m_CommandXboxControllerManipulator.leftTrigger().whileTrue(new spinShooter(shooter, -1));
     m_CommandXboxControllerManipulator.rightTrigger().whileTrue(new spinShooter(shooter, 1));
@@ -169,10 +170,21 @@ public class RobotContainer {
     //return AutoUtils.getCommandFromPathName("New Path", m_robotDrive);
     AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
 
-    Command rev = new ShooterSpinTime(shooter, 0.5);
+    Command zero = new InstantCommand(() -> arm.resetEncoder());
 
-    Command shoot = new ParallelCommandGroup(new IntakeMove(intake, 0.5, -1), new ShooterSpinTime(shooter, 0.5));
 
+    Command goto0 = new ArmToPositionAuto(arm, -20).andThen( new InstantCommand(() -> intake.spin(0)));
+
+
+    Command rev = new ShooterSpinTime(shooter, 2);
+
+    Command shoot = new ParallelCommandGroup(new IntakeMove(intake, 0.5, 1), new ShooterSpinTime(shooter, 0.5));
+
+    //AutoBuilder.addCommand(zero);
+
+    AutoBuilder.addCommand(goto0);
+
+    AutoBuilder.addCommand(zero);
 
     AutoBuilder.addCommand(rev);
 
@@ -181,5 +193,9 @@ public class RobotContainer {
     //AutoBuilder.addPath("New Path", true);
 
     return AutoBuilder.getAuto();
+
+
+    
+    //return goto0
   }
 }

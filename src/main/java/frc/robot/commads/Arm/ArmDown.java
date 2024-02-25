@@ -23,7 +23,7 @@ public class ArmDown extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    arm.spin(-0.5);
+    arm.spin(-0.15);
   }
 
   // Called once the command ends or is interrupted.

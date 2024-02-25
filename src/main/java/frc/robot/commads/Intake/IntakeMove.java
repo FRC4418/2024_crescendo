@@ -36,7 +36,7 @@ public class IntakeMove extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.spin(-.2);
+    intake.spin(speed);
   }
 
   // Called once the command ends or is interrupted.

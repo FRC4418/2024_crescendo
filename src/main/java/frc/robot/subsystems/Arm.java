@@ -34,7 +34,7 @@ public class Arm extends SubsystemBase {
     var talonFXConfigs = new TalonFXConfiguration();
     var slot0Configs = talonFXConfigs.Slot0;
 
-    slot0Configs.kP = 0.4; // A position error of 2.5 rotations results in 12 V output
+    slot0Configs.kP = 0.25; // A position error of 2.5 rotations results in 12 V output
     slot0Configs.kI = 0; // no output for integrated error
     slot0Configs.kD = 0; // A velocity error of 1 rps results in 0.1 V output
 
@@ -90,8 +90,8 @@ public class Arm extends SubsystemBase {
   // }
 
   public void goToPosition(double position){
-    armMaster.setControl(m_request.withPosition(position).withFeedForward(0.5));
-    armSlave.setControl(m_request.withPosition(position).withFeedForward(0.5));
+    armMaster.setControl(m_request.withPosition(position).withFeedForward(0.3));
+    armSlave.setControl(m_request.withPosition(position).withFeedForward(0.3));
     //System.out.println(position);
   }
 
