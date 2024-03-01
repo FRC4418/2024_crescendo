@@ -22,16 +22,17 @@ public class AutoCommandBuilder{
         this.m_robotDrive = m_robotDrive;
     }
 
-    public void addPair(String pathName, boolean firstPath, Command command){
-        addCommand(AutoUtils.getCommandFromPathName(pathName, m_robotDrive, firstPath).alongWith(command));
+    public void addPair(String pathName, boolean firstPath, Command command, boolean flipped){
+        addCommand(AutoUtils.getCommandFromPathName(pathName, m_robotDrive, firstPath, flipped).alongWith(command));
     }
+
 
     public void addCommand(Command command){
         autoCommand.addCommands(command);
     }
 
-    public void addPath(String pathName,boolean firstPath){
-        autoCommand.addCommands(AutoUtils.getCommandFromPathName(pathName, m_robotDrive, firstPath));
+    public void addPath(String pathName,boolean firstPath, boolean flipped){
+        autoCommand.addCommands(AutoUtils.getCommandFromPathName(pathName, m_robotDrive, firstPath, flipped));
     }
 
     public Command getAuto()
