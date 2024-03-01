@@ -65,7 +65,7 @@ public final class Constants {
 
     public static final int kFrontLeftTurningCanId = 7;
     public static final int kRearLeftTurningCanId = 5;
-    public static final int kFrontRightTurningCanId =3;
+    public static final int kFrontRightTurningCanId = 3;
     public static final int kRearRightTurningCanId = 1;
 
     public static final boolean kGyroReversed = true;
@@ -127,8 +127,8 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 3;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+    public static final double kMaxSpeedMetersPerSecond = 1;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 1;
     public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
     public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
 
@@ -145,9 +145,9 @@ public final class Constants {
     public static final double kFreeSpeedRpm = 5676;
   }
   public static final class armPositions {
-    public static final double speaker = 4;
-    public static final double amp = 4;
-    public static final double trap = 4;
-    public static final double intake = 4;
+    public static final double Position1 = 4;
+    public static final double Position2 = 5;
+    public static final double Position3 = 6;
+    public static final double Position4 = 7;
   }
 }
