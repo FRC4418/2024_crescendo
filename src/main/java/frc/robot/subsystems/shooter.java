@@ -8,14 +8,12 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class shooter extends SubsystemBase {
+public class Shooter extends SubsystemBase {
   private TalonFX motor1 = new TalonFX(10);
   private TalonFX motor2 = new TalonFX(11);
 
   /** Creates a new shooter. */
-  public shooter() {
-    motor1.setInverted(true);
-  }
+  public Shooter() {}
 
   public void spin(double speed){
     motor1.set(speed);
@@ -25,5 +23,6 @@ public class shooter extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    //System.out.println(motor1.getVelocity().getValueAsDouble());
   }
 }
