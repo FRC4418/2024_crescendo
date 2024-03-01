@@ -15,23 +15,34 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.Trajectory.State;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commads.IntakeCommand;
-import frc.robot.commads.spinShooter;
+import frc.robot.commads.Intake.IntakeMove;
+import frc.robot.commads.Intake.IntakeNote;
+import frc.robot.commads.Intake.IntakeShoot;
+import frc.robot.commads.Intake.IntakeSpin;
+import frc.robot.commads.Intake.IntakeSpit;
+import frc.robot.commads.Shooter.spinShooter;
+import frc.robot.commads.Arm.ArmDown;
+import frc.robot.commads.Arm.ArmToPosition;
+import frc.robot.commads.Arm.ArmToPositionAuto;
+import frc.robot.commads.Arm.ArmUp;
+import frc.robot.commads.Arm.armSet;
 import frc.robot.commads.AutoStuff.Aim;
+import frc.robot.commads.AutoStuff.ShooterSpinTime;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.VisionSubsystem;
-import frc.robot.subsystems.shooter;
+import frc.robot.subsystems.Shooter;
 import frc.utils.AutoCommandBuilder;
 import frc.utils.AutoUtils;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -60,13 +71,16 @@ import edu.wpi.first.math.trajectory.proto.TrajectoryStateProto;
 public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  private final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
-  private final shooter m_shooter = new shooter();
+  private final Intake intake = new Intake();
+  private final Arm arm = new Arm();
+  private final Shooter shooter = new Shooter();
+  private boolean fieldRelative = true;
   //private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
-  CommandXboxController m_CommandXboxController = new CommandXboxController(0);
+  CommandXboxController m_CommandXboxControllerDriver = new CommandXboxController(0);
+  CommandXboxController m_CommandXboxControllerManipulator = new CommandXboxController(1);
 
   //AutoGamepad driver = new AutoGamepad(0);
 
@@ -78,7 +92,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
-// /*
+
     // Configure default commands
     m_robotDrive.setDefaultCommand(
         // The left stick controls translation of the robot.
@@ -89,7 +103,7 @@ public class RobotContainer {
                 -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
                 true, true),
-            m_robotDrive));  // */
+            m_robotDrive));
   }
 
   /**
@@ -103,19 +117,47 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     //driver.getBottomButton().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
-    m_CommandXboxController.a().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
+    m_CommandXboxControllerManipulator.povUp().onTrue(new ArmToPosition(arm, 30));
+    m_CommandXboxControllerManipulator.povLeft().onTrue(new ArmToPosition(arm, 15));
+    m_CommandXboxControllerManipulator.povRight().onTrue(new ArmToPosition(arm, 5));
+    m_CommandXboxControllerManipulator.povDown().onTrue(new ArmToPosition(arm, 0));
 
-    m_IntakeSubsystem.setDefaultCommand(new IntakeCommand(m_IntakeSubsystem, 0));
+    m_CommandXboxControllerManipulator.b().onTrue(new IntakeMove(intake, 0.1, -0.2));
 
-    m_shooter.setDefaultCommand(new spinShooter(m_shooter, 0));    
+    m_CommandXboxControllerManipulator.leftTrigger().whileTrue(new spinShooter(shooter, -1));
+    m_CommandXboxControllerManipulator.rightTrigger().whileTrue(new spinShooter(shooter, 1));
+
+    m_CommandXboxControllerManipulator.x().whileTrue(new IntakeSpin(intake, 1));
+
+    m_CommandXboxControllerManipulator.leftBumper().whileTrue(new ArmDown(arm));
+    m_CommandXboxControllerManipulator.rightBumper().whileTrue(new ArmUp(arm));
+
+    m_CommandXboxControllerManipulator.y().whileTrue(new InstantCommand(() -> arm.resetEncoder()));
 
 
-    m_CommandXboxController.x().whileTrue(new IntakeCommand(m_IntakeSubsystem,1));   
+    m_CommandXboxControllerDriver.a().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
+    m_CommandXboxControllerDriver.x().onTrue(new InstantCommand(() -> fieldRelative = !fieldRelative)
+    .andThen(new RunCommand(
+      () -> m_robotDrive.drive(
+        -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+        -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+        -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
+        fieldRelative, true), // pass fieldRelative as the last argument
+      m_robotDrive)));
+
+    m_CommandXboxControllerDriver.povLeft().whileTrue(new IntakeSpin(intake, 1));
+    m_CommandXboxControllerDriver.povUp().onTrue(new ArmToPosition(arm, 1));
+    m_CommandXboxControllerDriver.povDown().onTrue(new ArmToPosition(arm, 0));
+    m_CommandXboxControllerDriver.povRight().onTrue(new IntakeMove(intake, 0.1, 0.2));
+
+
+    m_CommandXboxControllerDriver.y().whileTrue(new spinShooter(shooter, 1));
     
-    m_CommandXboxController.a().whileTrue(new IntakeCommand(m_IntakeSubsystem,-1));
-    
-    m_CommandXboxController.rightBumper().whileTrue(new spinShooter(m_shooter, 1));
-
+    // m_CommandXboxControllerDriver.povUp().whileTrue(new armSet(arm, 0.5));
+    m_CommandXboxControllerDriver.b().whileTrue(new InstantCommand(() -> arm.resetEncoder()));
+    arm.setDefaultCommand(new armSet(arm, 0));
+    intake.setDefaultCommand(new IntakeSpin(intake, 0));
+    shooter.setDefaultCommand(new spinShooter(shooter, 0));
   }
 
   /**
@@ -127,17 +169,33 @@ public class RobotContainer {
 
     //return AutoUtils.getCommandFromPathName("New Path", m_robotDrive);
     AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
-    
-    AutoBuilder.addPath("New Path", true, flip());
-    return AutoBuilder.getAuto();
-  }
 
-  public boolean flip(){
+    Command zero = new InstantCommand(() -> arm.resetEncoder());
+
+
+    Command goto0 = new ArmToPositionAuto(arm, -20).andThen( new InstantCommand(() -> intake.spin(0)));
+
+
+    Command rev = new ShooterSpinTime(shooter, 2);
+
+    Command shoot = new ParallelCommandGroup(new IntakeMove(intake, 0.5, 1), new ShooterSpinTime(shooter, 0.5));
+
+    //AutoBuilder.addCommand(zero);
+
+    AutoBuilder.addCommand(goto0);
+
+    AutoBuilder.addCommand(zero);
+
+    AutoBuilder.addCommand(rev);
+
+    AutoBuilder.addCommand(shoot);
+
+    //AutoBuilder.addPath("New Path", true);
+
+    return AutoBuilder.getAuto();
+
+
     
-                    var alliance = DriverStation.getAlliance();
-                    if (alliance.isPresent()) {
-                        return alliance.get() == DriverStation.Alliance.Red;
-                    }
-                    return false;
+    //return goto0
   }
 }
