@@ -77,10 +77,10 @@ public class AutoUtils
         if(flipped){
             Translation2d pos = start.getTranslation();
 
-            start = new Pose2d(-pos.getX(), pos.getY(), start.getRotation());
+            start = new Pose2d(pos.getX(), -pos.getY(), start.getRotation());
             Translation2d pos2 = end.getTranslation();
 
-            end = new Pose2d(-pos2.getX(), pos2.getY(), end.getRotation());
+            end = new Pose2d(pos2.getX(), -pos2.getY(), end.getRotation());
         }
 
         ls.add(start);
@@ -130,7 +130,7 @@ public class AutoUtils
         );
 
         Command drive = new SwerveControllerCommand(
-            exampleTrajectory,
+            traj,
             m_robotDrive::getPose, // Functional interface to feed supplier
             DriveConstants.kDriveKinematics,
 

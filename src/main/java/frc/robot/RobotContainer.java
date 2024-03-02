@@ -190,7 +190,7 @@ public class RobotContainer {
 
     //AutoBuilder.addCommand(shoot);
 
-    AutoBuilder.addPath("New Path", true, false);
+    AutoBuilder.addPath("New Path", true, true);
 
     return AutoBuilder.getAuto();
 

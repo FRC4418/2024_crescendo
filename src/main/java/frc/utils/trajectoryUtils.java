@@ -5,7 +5,7 @@
 package frc.utils;
 
 /** Add your docs here. */
-public class trajectoryUtils {
+public class TrajectoryUtils {
 
     public static double gravity = -9.8;
     public static double rotationPointHeight = 0.4064;
