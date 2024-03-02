@@ -173,7 +173,7 @@ public class RobotContainer {
     Command zero = new InstantCommand(() -> arm.resetEncoder());
 
 
-    Command goto0 = new ArmToPositionAuto(arm, -20).andThen( new InstantCommand(() -> intake.spin(0)));
+    Command goto0 = new ArmToPositionAuto(arm, -20).andThen( new InstantCommand(() -> arm.spin(0)));
 
 
     Command rev = new ShooterSpinTime(shooter, 2);
@@ -182,15 +182,15 @@ public class RobotContainer {
 
     //AutoBuilder.addCommand(zero);
 
-    AutoBuilder.addCommand(goto0);
+    //AutoBuilder.addCommand(goto0);
 
-    AutoBuilder.addCommand(zero);
+    //AutoBuilder.addCommand(zero);
 
-    AutoBuilder.addCommand(rev);
+    //AutoBuilder.addCommand(rev);
 
-    AutoBuilder.addCommand(shoot);
+    //AutoBuilder.addCommand(shoot);
 
-    //AutoBuilder.addPath("New Path", true);
+    AutoBuilder.addPath("New Path", true, false);
 
     return AutoBuilder.getAuto();
 
