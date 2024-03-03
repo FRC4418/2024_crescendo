@@ -30,8 +30,13 @@ import frc.robot.commads.Arm.ArmDown;
 import frc.robot.commads.Arm.ArmToPosition;
 import frc.robot.commads.Arm.ArmToPositionAuto;
 import frc.robot.commads.Arm.ArmUp;
+import frc.robot.commads.Arm.ShooterToAngle;
 import frc.robot.commads.Arm.armSet;
 import frc.robot.commads.AutoStuff.Aim;
+import frc.robot.commads.AutoStuff.AutoAim;
+import frc.robot.commads.AutoStuff.AutoAimAt;
+import frc.robot.commads.AutoStuff.AutoAngle;
+import frc.robot.commads.AutoStuff.AutoShoot;
 import frc.robot.commads.AutoStuff.ShooterSpinTime;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
@@ -75,7 +80,7 @@ public class RobotContainer {
   private final Arm arm = new Arm();
   private final Shooter shooter = new Shooter();
   private boolean fieldRelative = true;
-  //private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
+  private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -134,27 +139,32 @@ public class RobotContainer {
 
     m_CommandXboxControllerManipulator.y().whileTrue(new InstantCommand(() -> arm.resetEncoder()));
 
+    
 
     m_CommandXboxControllerDriver.a().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
-    m_CommandXboxControllerDriver.x().onTrue(new InstantCommand(() -> fieldRelative = !fieldRelative)
-    .andThen(new RunCommand(
-      () -> m_robotDrive.drive(
-        -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-        -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-        -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
-        fieldRelative, true), // pass fieldRelative as the last argument
-      m_robotDrive)));
 
-    m_CommandXboxControllerDriver.povLeft().whileTrue(new IntakeSpin(intake, 1));
-    m_CommandXboxControllerDriver.povUp().onTrue(new ArmToPosition(arm, 1));
-    m_CommandXboxControllerDriver.povDown().onTrue(new ArmToPosition(arm, 0));
-    m_CommandXboxControllerDriver.povRight().onTrue(new IntakeMove(intake, 0.1, 0.2));
+    m_CommandXboxControllerDriver.b().onTrue(new IntakeMove(intake, 0.1, -0.2));
+
+    m_CommandXboxControllerDriver.x().whileTrue(new IntakeSpin(intake, 1));
+
+    m_CommandXboxControllerDriver.rightTrigger().whileTrue(new spinShooter(shooter, 1));
 
 
-    m_CommandXboxControllerDriver.y().whileTrue(new spinShooter(shooter, 1));
     
-    // m_CommandXboxControllerDriver.povUp().whileTrue(new armSet(arm, 0.5));
-    m_CommandXboxControllerDriver.b().whileTrue(new InstantCommand(() -> arm.resetEncoder()));
+    m_CommandXboxControllerDriver.y().whileTrue(new InstantCommand(() -> arm.resetEncoder()));
+
+    m_CommandXboxControllerDriver.rightBumper().whileTrue(new AutoAngle(arm, m_VisionSubsystem).alongWith(new Aim(m_robotDrive, m_VisionSubsystem)));
+
+    m_CommandXboxControllerDriver.leftBumper().onTrue(new ShooterToAngle(arm, 30));
+
+
+
+    m_CommandXboxControllerDriver.povUp().onTrue(new ArmToPosition(arm, 30));
+    m_CommandXboxControllerDriver.povLeft().onTrue(new ArmToPosition(arm, 15));
+    m_CommandXboxControllerDriver.povRight().onTrue(new ArmToPosition(arm, 5));
+    m_CommandXboxControllerDriver.povDown().onTrue(new ArmToPosition(arm, 0));
+
+
     arm.setDefaultCommand(new armSet(arm, 0));
     intake.setDefaultCommand(new IntakeSpin(intake, 0));
     shooter.setDefaultCommand(new spinShooter(shooter, 0));
@@ -178,7 +188,15 @@ public class RobotContainer {
 
     Command rev = new ShooterSpinTime(shooter, 2);
 
+    Command intakeCommand = new IntakeMove(intake, 1, 1d);
+
+    Command outTake = new IntakeMove(intake, 0.1, -0.2);
+
     Command shoot = new ParallelCommandGroup(new IntakeMove(intake, 0.5, 1), new ShooterSpinTime(shooter, 0.5));
+
+    Command setupShot = new AutoAngle(arm, m_VisionSubsystem).alongWith(new Aim(m_robotDrive, m_VisionSubsystem));    
+
+    Command goofyShoot = new IntakeMove(intake, 0.3, -1);
 
     //AutoBuilder.addCommand(zero);
 
@@ -190,7 +208,26 @@ public class RobotContainer {
 
     //AutoBuilder.addCommand(shoot);
 
-    AutoBuilder.addPath("New Path", true, true);
+    //AutoBuilder.addPath("New Path", true, true);
+
+    AutoBuilder.addPath("start to left", true, false);
+
+    AutoBuilder.addPair("intake", false, false, intakeCommand);
+
+    AutoBuilder.addCommand(outTake);
+
+    //AutoBuilder.addCommand(setupShot);
+
+    AutoBuilder.addCommand(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
+
+    AutoBuilder.addPair("left to mid note", false, false, new AutoAimAt(m_robotDrive, m_robotDrive::getYawDouble , 0));
+
+    AutoBuilder.addPair("intake", false, false, intakeCommand);
+
+    AutoBuilder.addCommand(outTake);
+
+    AutoBuilder.addCommand(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
+
 
     return AutoBuilder.getAuto();
 

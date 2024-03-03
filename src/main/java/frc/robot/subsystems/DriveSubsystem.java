@@ -294,6 +294,10 @@ public class DriveSubsystem extends SubsystemBase {
     return  DriveConstants.kGyroReversed ? -m_gyro.getYaw() : m_gyro.getYaw();
   }
 
+  public double getYawDouble(){
+    return (double) getYaw();
+  }
+
   /**
    * Returns the turn rate of the robot.
    *

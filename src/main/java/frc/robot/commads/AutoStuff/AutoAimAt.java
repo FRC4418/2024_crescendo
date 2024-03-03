@@ -27,7 +27,9 @@ public class AutoAimAt extends Command {
     this.driveSubsystem = driveSubsystem;
     this.rotSupplier = rotSupplier;
     this.desiredPos = desiredPos;
-    addRequirements(driveSubsystem);
+
+    try{
+    addRequirements(driveSubsystem);    }catch(Exception e){}
   }
 
   // Called when the command is initially scheduled.

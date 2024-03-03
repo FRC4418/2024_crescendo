@@ -8,7 +8,9 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.utils.VisionUtils;
 
 public class VisionSubsystem extends SubsystemBase {
   /** Creates a new vision. */
@@ -28,5 +30,11 @@ public class VisionSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     latestResult = camera.getLatestResult();
+
+    //SmartDashboard.putNumber("hi", VisionUtils.getDist(VisionUtils.getId(latestResult, 4, 7).getPitch()));
+    //System.out.println(latestResult.getBestTarget().getPitch());
+    var target = VisionUtils.getId(latestResult, 4, 7);
+    if (target == null) return;
+    //System.out.println(VisionUtils.getDist(target.getPitch()));
   }
 }

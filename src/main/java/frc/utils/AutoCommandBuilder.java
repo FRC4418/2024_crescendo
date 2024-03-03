@@ -8,6 +8,7 @@ import java.util.List;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -22,8 +23,8 @@ public class AutoCommandBuilder{
         this.m_robotDrive = m_robotDrive;
     }
 
-    public void addPair(String pathName, boolean firstPath, Command command, boolean flipped){
-        addCommand(AutoUtils.getCommandFromPathName(pathName, m_robotDrive, firstPath, flipped).alongWith(command));
+    public void addPair(String pathName, boolean firstPath, boolean flipped, Command command){
+        addCommand(new ParallelCommandGroup(AutoUtils.getCommandFromPathName(pathName, m_robotDrive, firstPath, flipped),command));
     }
 
 

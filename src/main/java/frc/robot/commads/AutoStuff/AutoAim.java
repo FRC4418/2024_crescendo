@@ -8,6 +8,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.utils.VisionUtils;
 
 public class AutoAim extends Command {
   /** Creates a new autoAim. */
@@ -22,7 +23,8 @@ public class AutoAim extends Command {
     // Use addRequirements() here to declare subsystem dependencies.
     this.driveSubsystem = driveSubsystem;
     this.visionSubsystem = visionSubsystem;
-    addRequirements(driveSubsystem,visionSubsystem);
+    try{
+    addRequirements(driveSubsystem,visionSubsystem); }catch(Exception e){}
   }
 
   // Called when the command is initially scheduled.
@@ -42,7 +44,7 @@ public class AutoAim extends Command {
       return 0;
     }
 
-    return turnController.calculate(result.getBestTarget().getYaw(), 0);
+    return turnController.calculate(VisionUtils.getId(result, 4, 7).getYaw(), 0);
   }
 
   // Called once the command ends or is interrupted.

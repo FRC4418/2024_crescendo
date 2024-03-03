@@ -4,18 +4,23 @@
 
 package frc.utils;
 
+import edu.wpi.first.math.util.Units;
+
 /** Add your docs here. */
 public class TrajectoryUtils {
 
     public static double gravity = -9.8;
     public static double rotationPointHeight = 0.4064;
-    public static double speakerHeight = 2d;
+    public static double speakerHeight = 2.033d;
     public static double initialVelocity = 10;
     public static double armLength = 0.5461;
     public static double angleDifference = -35d;
+    public static double cameraShooterDist = Units.inchesToMeters(24);
 
     public static double getGoodShootingAngle(double distance){
         double angle = 0;
+
+        distance += cameraShooterDist;
 
         while(true){
             if(angle > 89) return -1;

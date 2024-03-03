@@ -17,11 +17,14 @@ public class ShooterToAngle extends Command {
   public ShooterToAngle(Arm arm, double angleDeg) {
     this.arm = arm;
     this.angle = angleDeg;
-    addRequirements(arm);
+    try{
+    addRequirements(arm);  }catch(Exception e){}
 
-    double desiredMovementFrom0Deg = this.angle - lowestAngleDeg;
+    
+
+    double desiredMovementFrom0Deg = lowestAngleDeg - this.angle;
     double desiredMovementFrom0Rot = desiredMovementFrom0Deg/360;
-    desiredMotorRot = desiredMovementFrom0Rot * 80;
+    desiredMotorRot = desiredMovementFrom0Rot * 80 * Math.PI;
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -32,7 +35,9 @@ public class ShooterToAngle extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    arm.goToPosition(desiredMotorRot);
+    //arm.goToPosition(desiredMotorRot);
+    arm.gotoShooterAngle(angle);
+    //System.out.println(desiredMotorRot);
   }
 
   // Called once the command ends or is interrupted.
