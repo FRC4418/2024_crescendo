@@ -47,7 +47,7 @@ public class AutoShoot extends Command {
     try{
     addRequirements(arm,intake,shooter,visionSubsystem,driveSubsystem);}
     catch(Exception e){
-      
+
     }
   }
 
@@ -62,7 +62,7 @@ public class AutoShoot extends Command {
 
     driveSubsystem.drive(0, 0, getRotSpeed()/8.4, false, true);
 
-    
+    shooter.spin(1);
 
     var latestResult = visionSubsystem.getLatestResult();
     var subTarget = VisionUtils.getId(latestResult, 4, 7);
@@ -76,12 +76,14 @@ public class AutoShoot extends Command {
     if(desiredAngle > arm.lowestAngleDeg) return;
     arm.gotoShooterAngle(desiredAngle);
 
-    if(shooting)     intake.spin(-1);
+    if(shooting)     intake.spin(1);
 
 
-    if(!isInRange(getRotSpeed(),0,0.1)) return; //if its still moveing dont shoot
+    if(!isInRange(getRotSpeed(),0,0.2)) return; //if its still moveing dont shoot
 
-    if(!isInRange(arm.getArmPos(), arm.desiredMotorRot, 1)) return; //if the are is close to pos
+    if(!isInRange(arm.getArmPos(), arm.desiredMotorRot, 0.3)) return; //if the are is close to pos
+
+    if(!isInRange(shooter.getSpeed(), 66.5, 4)) return;
 
 
     if(!shooting) timer.start();
@@ -112,11 +114,20 @@ public class AutoShoot extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    timer.stop();
+    timer.reset();
+    timer.stop();
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return timer.get() > 0.3;
+    if(timer.get() > 0.3){
+      timer = new Timer();
+      shooting = false;
+      return true;
+    }
+    return false;
   }
 }

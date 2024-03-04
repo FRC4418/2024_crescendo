@@ -8,11 +8,12 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.AutoSpin;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class AutoAimAt extends Command {
   /** Creates a new autoAim. */
-  private DriveSubsystem driveSubsystem;
+  private AutoSpin autoSpin;
   private Supplier<Double> rotSupplier;
   public double desiredPos;
 
@@ -22,14 +23,14 @@ public class AutoAimAt extends Command {
 
 
 
-  public AutoAimAt(DriveSubsystem driveSubsystem, Supplier<Double> rotSupplier, double desiredPos) {
+  public AutoAimAt(AutoSpin autoSpin, Supplier<Double> rotSupplier, double desiredPos) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.driveSubsystem = driveSubsystem;
+    this.autoSpin = autoSpin;
     this.rotSupplier = rotSupplier;
     this.desiredPos = desiredPos;
 
     try{
-    addRequirements(driveSubsystem);    }catch(Exception e){}
+    addRequirements(autoSpin);    }catch(Exception e){}
   }
 
   // Called when the command is initially scheduled.
@@ -39,7 +40,8 @@ public class AutoAimAt extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    driveSubsystem.autoSpinSpeed = getRotSpeed()/8.4;
+    //driveSubsystem.autoSpinSpeed = getRotSpeed()/8.4;
+    autoSpin.setSpin(getRotSpeed()/8.4);
   }
 
   private double getRotSpeed(){

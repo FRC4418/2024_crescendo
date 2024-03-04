@@ -16,6 +16,7 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
@@ -26,6 +27,7 @@ import frc.robot.commads.Intake.IntakeShoot;
 import frc.robot.commads.Intake.IntakeSpin;
 import frc.robot.commads.Intake.IntakeSpit;
 import frc.robot.commads.Shooter.spinShooter;
+import frc.robot.commads.RumbleForTime;
 import frc.robot.commads.Arm.ArmDown;
 import frc.robot.commads.Arm.ArmToPosition;
 import frc.robot.commads.Arm.ArmToPositionAuto;
@@ -39,10 +41,12 @@ import frc.robot.commads.AutoStuff.AutoAngle;
 import frc.robot.commads.AutoStuff.AutoShoot;
 import frc.robot.commads.AutoStuff.ShooterSpinTime;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.AutoSpin;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Vibrator;
 import frc.utils.AutoCommandBuilder;
 import frc.utils.AutoUtils;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -51,6 +55,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -74,18 +79,27 @@ import edu.wpi.first.math.trajectory.proto.TrajectoryStateProto;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+
+
+  
+  XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+  XboxController m_otherController = new XboxController(1);
+  CommandXboxController m_CommandXboxControllerDriver = new CommandXboxController(0);
+  CommandXboxController m_CommandXboxControllerManipulator = new CommandXboxController(1);
+
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  private final Intake intake = new Intake();
+
+
+  private final Vibrator vibrator = new Vibrator(m_driverController, m_otherController);
+
+  private final Intake intake = new Intake(vibrator);
   private final Arm arm = new Arm();
   private final Shooter shooter = new Shooter();
   private boolean fieldRelative = true;
   private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
 
   // The driver's controller
-  XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
-  CommandXboxController m_CommandXboxControllerDriver = new CommandXboxController(0);
-  CommandXboxController m_CommandXboxControllerManipulator = new CommandXboxController(1);
 
   //AutoGamepad driver = new AutoGamepad(0);
 
@@ -153,21 +167,21 @@ public class RobotContainer {
     
     m_CommandXboxControllerDriver.y().whileTrue(new InstantCommand(() -> arm.resetEncoder()));
 
-    m_CommandXboxControllerDriver.rightBumper().whileTrue(new AutoAngle(arm, m_VisionSubsystem).alongWith(new Aim(m_robotDrive, m_VisionSubsystem)));
+    //m_CommandXboxControllerDriver.rightBumper().whileTrue(new AutoAngle(arm, m_VisionSubsystem).alongWith(new Aim(m_robotDrive, m_VisionSubsystem)));
 
-    m_CommandXboxControllerDriver.leftBumper().onTrue(new ShooterToAngle(arm, 30));
+    m_CommandXboxControllerDriver.rightBumper().onTrue(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
 
+    m_CommandXboxControllerDriver.leftBumper().onTrue(new ShooterToAngle(arm, 0));
 
 
     m_CommandXboxControllerDriver.povUp().onTrue(new ArmToPosition(arm, 30));
-    m_CommandXboxControllerDriver.povLeft().onTrue(new ArmToPosition(arm, 15));
-    m_CommandXboxControllerDriver.povRight().onTrue(new ArmToPosition(arm, 5));
     m_CommandXboxControllerDriver.povDown().onTrue(new ArmToPosition(arm, 0));
 
 
     arm.setDefaultCommand(new armSet(arm, 0));
     intake.setDefaultCommand(new IntakeSpin(intake, 0));
     shooter.setDefaultCommand(new spinShooter(shooter, 0));
+    vibrator.setDefaultCommand(new RumbleForTime(vibrator, RumbleType.kBothRumble, 0, 0.1));
   }
 
   /**
@@ -220,7 +234,7 @@ public class RobotContainer {
 
     AutoBuilder.addCommand(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
 
-    AutoBuilder.addPair("left to mid note", false, false, new AutoAimAt(m_robotDrive, m_robotDrive::getYawDouble , 0));
+    AutoBuilder.addPair("left to mid note", false, false, new AutoAimAt(new AutoSpin(m_robotDrive), m_robotDrive::getYawDouble , 0));
 
     AutoBuilder.addPair("intake", false, false, intakeCommand);
 

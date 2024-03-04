@@ -20,9 +20,13 @@ public class Shooter extends SubsystemBase {
     motor2.set(speed);
   }
 
+  public double getSpeed(){
+    return motor1.getVelocity().getValueAsDouble();
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    //System.out.println(motor1.getVelocity().getValueAsDouble());
+    System.out.println(motor1.getVelocity().getValueAsDouble());
   }
 }

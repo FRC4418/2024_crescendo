@@ -29,7 +29,7 @@ public class Arm extends SubsystemBase {
   private double cruiseVelocity = percentOfPeak * peakVelocity;
   final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
 
-  public final double lowestAngleDeg = 53;
+  public final double lowestAngleDeg = 48;
 
   public Arm() {
 
@@ -40,8 +40,8 @@ public class Arm extends SubsystemBase {
     var talonFXConfigs = new TalonFXConfiguration();
     var slot0Configs = talonFXConfigs.Slot0;
 
-    slot0Configs.kP = 0.4; // A position error of 2.5 rotations results in 12 V output
-    slot0Configs.kI = 0.2; // no output for integrated error
+    slot0Configs.kP = 0.65; // A position error of 2.5 rotations results in 12 V output
+    slot0Configs.kI = 0.4; // no output for integrated error
     slot0Configs.kD = 0.1; // A velocity error of 1 rps results in 0.1 V output
 
 
@@ -81,7 +81,7 @@ public class Arm extends SubsystemBase {
     
     double desiredMovementFrom0Deg = lowestAngleDeg - angle;
     double desiredMovementFrom0Rot = desiredMovementFrom0Deg/360;
-    desiredMotorRot = desiredMovementFrom0Rot * 80 * Math.PI;
+    desiredMotorRot = desiredMovementFrom0Rot * 80;
     //System.out.println("motor rot " + desiredMotorRot + " angle: " + angle);
     goToPosition(desiredMotorRot);
   }
@@ -105,8 +105,8 @@ public class Arm extends SubsystemBase {
   // }
 
   public void goToPosition(double position){
-    armMaster.setControl(m_request.withPosition(position).withFeedForward(0.3));
-    armSlave.setControl(m_request.withPosition(position).withFeedForward(0.3));
+    armMaster.setControl(m_request.withPosition(position).withFeedForward(0.65));
+    armSlave.setControl(m_request.withPosition(position).withFeedForward(0.65));
     //System.out.println(position);
   }
 
