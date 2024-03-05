@@ -53,7 +53,9 @@ public class AutoShoot extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    shooting = false;
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -83,7 +85,7 @@ public class AutoShoot extends Command {
 
     if(!isInRange(arm.getArmPos(), arm.desiredMotorRot, 0.3)) return; //if the are is close to pos
 
-    if(!isInRange(shooter.getSpeed(), 66.5, 4)) return;
+    if(!isInRange(shooter.getSpeed(), 80, 18)) return;
 
 
     if(!shooting) timer.start();
@@ -115,7 +117,6 @@ public class AutoShoot extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    timer.stop();
     timer.reset();
     timer.stop();
   }
@@ -125,7 +126,7 @@ public class AutoShoot extends Command {
   public boolean isFinished() {
     if(timer.get() > 0.3){
       timer = new Timer();
-      shooting = false;
+      //shooting = false;
       return true;
     }
     return false;

@@ -41,7 +41,9 @@ public class Intake extends SubsystemBase {
 
   public void spinWBeamBreak(double speed){
     SmartDashboard.putBoolean("beam break", beamBreak.get());
-    if(beamBreak.get() == false) spin(speed);
+    //if(beamBreak.get() == false) spin(speed);
+    spin(speed);
+    //if(beamBreak.get()) new WaitCommand(0.2).andThen(new IntakeMove(this, 0.1, -.2)).schedule();;
     /*
     if(!beamBreak.get()){ 
       spin(speed);
@@ -74,7 +76,7 @@ public class Intake extends SubsystemBase {
     if(current != prevUpdateValue){ 
       new RumbleForTime(vibrator, RumbleType.kBothRumble, 1, 0.2).schedule();
 
-      if(beamBreak.get()) new WaitCommand(0.2).andThen(new IntakeMove(this, 0.1, -.2)).schedule();;
+      
     }
 
 
