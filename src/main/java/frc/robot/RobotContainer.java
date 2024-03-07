@@ -15,6 +15,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.Trajectory.State;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.XboxController.Button;
@@ -142,6 +143,8 @@ public class RobotContainer {
     //driver.getBottomButton().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
     m_CommandXboxControllerManipulator.povLeft().onTrue(new ArmToPosition(arm, 23));
 
+    m_CommandXboxControllerManipulator.povLeft().onTrue(new ShooterToAngle(arm, 0));
+
     m_CommandXboxControllerManipulator.b().whileTrue(new IntakeMove(intake, 0.1, -.2));
 
     m_CommandXboxControllerManipulator.rightTrigger().whileTrue(new spinShooter(shooter, 1));
@@ -201,55 +204,62 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
 
+    boolean flipped = false;
+    var alliance = DriverStation.getAlliance();
+
+    if (alliance.isPresent()) {
+      flipped = alliance.get() == DriverStation.Alliance.Red;
+    }
+
     //return AutoUtils.getCommandFromPathName("New Path", m_robotDrive);
     AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
 
     Command zero = new InstantCommand(() -> arm.resetEncoder());
 
 
-    Command goto0 = new ArmToPositionAuto(arm, -20).andThen( new InstantCommand(() -> arm.spin(0)));
+    Command goto0 = new ArmToPositionAuto(arm, -23).andThen( new InstantCommand(() -> arm.spin(0)));
 
 
-    Command rev = new ShooterSpinTime(shooter, 2);
+    Command rev = new ShooterSpinTime(shooter, 1.5);
 
     Command intakeCommand = new IntakeMove(intake, 1, 1d);
 
     Command outTake = new IntakeMove(intake, 0.1, -0.2);
 
-    Command shoot = new ParallelCommandGroup(new IntakeMove(intake, 0.5, 1), new ShooterSpinTime(shooter, 0.5));
+    Command shoot = new ParallelCommandGroup(new IntakeMove(intake, 0.3, 1), new ShooterSpinTime(shooter, 0.3));
 
     Command setupShot = new AutoAngle(arm, m_VisionSubsystem).alongWith(new Aim(m_robotDrive, m_VisionSubsystem));    
 
     Command goofyShoot = new IntakeMove(intake, 0.3, -1);
 
-    //AutoBuilder.addCommand(zero);
+    AutoBuilder.addCommand(zero);
 
-    //AutoBuilder.addCommand(goto0);
+    AutoBuilder.addCommand(goto0);      skedsfsef    
 
-    //AutoBuilder.addCommand(zero);
+    AutoBuilder.addCommand(new InstantCommand(() -> arm.resetEncoder()));
 
-    //AutoBuilder.addCommand(rev);
+    AutoBuilder.addCommand(rev);
 
-    //AutoBuilder.addCommand(shoot);
+    AutoBuilder.addCommand(shoot);
 
     //AutoBuilder.addPath("New Path", true, true);
 
-    AutoBuilder.addPath("start to left", true, false);
+    AutoBuilder.addPath("start to left", true, flipped); //move from starting pose to left near note
 
-    AutoBuilder.addPair("intake", false, false, intakeCommand);
+    AutoBuilder.addPair("intake left near", false, flipped, intakeCommand);  //intatke the note
 
-    AutoBuilder.addCommand(outTake);
+    AutoBuilder.addCommand(outTake);  //outake the note a little pit to not stall the shooter
 
 
     //AutoBuilder.addCommand(setupShot);
 
     AutoBuilder.addCommand(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
 
-    AutoBuilder.addPair("left to mid note", false, false, new AutoAimAt(new AutoSpin(m_robotDrive), m_robotDrive::getYawDouble , 0));
+    AutoBuilder.addPair("left to mid note", false, flipped, new AutoAimAt(new AutoSpin(m_robotDrive), m_robotDrive::getYawDouble , 0));
 
-    AutoBuilder.addPair("intake", false, false, intakeCommand);
+    AutoBuilder.addPair("intake mid near", false, flipped, new IntakeMove(intake, 1, 1));
 
-    AutoBuilder.addCommand(outTake);
+    AutoBuilder.addCommand(new IntakeMove(intake, 0.1, -0.2));
 
     AutoBuilder.addCommand(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
 

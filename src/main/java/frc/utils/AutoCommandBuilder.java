@@ -24,7 +24,7 @@ public class AutoCommandBuilder{
     }
 
     public void addPair(String pathName, boolean firstPath, boolean flipped, Command command){
-        addCommand(new ParallelCommandGroup(AutoUtils.getCommandFromPathName(pathName, m_robotDrive, firstPath, flipped),command));
+        addCommand(AutoUtils.getCommandFromPathName(pathName, m_robotDrive, firstPath, flipped).alongWith(command));
     }
 
 
