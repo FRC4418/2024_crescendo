@@ -5,6 +5,8 @@
 package frc.robot.commads.AutoStuff;
 
 
+import java.util.concurrent.ExecutionException;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -60,13 +62,16 @@ public class AutoShoot extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("rot speed: " +getRotSpeed() + " arm current pos: " + arm.getArmPos() + " arm desired pos: " + arm.desiredMotorRot);
+    //System.out.println("rot speed: " +getRotSpeed() + " arm current pos: " + arm.getArmPos() + " arm desired pos: " + arm.desiredMotorRot);
 
     driveSubsystem.drive(0, 0, getRotSpeed()/8.4, false, true);
 
     shooter.spin(1);
 
     var latestResult = visionSubsystem.getLatestResult();
+
+    if(latestResult == null) return;
+
     var subTarget = VisionUtils.getId(latestResult, 4, 7);
 
     if (subTarget == null) return;
@@ -81,7 +86,7 @@ public class AutoShoot extends Command {
     if(shooting)     intake.spin(1);
 
 
-    if(!isInRange(getRotSpeed(),0,0.2)) return; //if its still moveing dont shoot
+    if(!isInRange(getRotSpeed(),0,0.3)) return; //if its still moveing dont shoot
 
     if(!isInRange(arm.getArmPos(), arm.desiredMotorRot, 0.3)) return; //if the are is close to pos
 
@@ -107,11 +112,20 @@ public class AutoShoot extends Command {
   private double getRotSpeed(){
     var result = visionSubsystem.getLatestResult();
 
+
+
+    if(result == null) return 0;
+
     if(!result.hasTargets()){
       return 0;
     }
 
-    return turnController.calculate(VisionUtils.getId(result, 4, 7).getYaw(), 0);
+    double yaw;
+
+    try{yaw = VisionUtils.getId(result, 4, 7).getYaw();
+    }catch(Exception e){return 0;}
+
+    return turnController.calculate(yaw, 0);
   }
 
   // Called once the command ends or is interrupted.

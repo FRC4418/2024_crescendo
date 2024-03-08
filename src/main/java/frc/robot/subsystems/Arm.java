@@ -19,6 +19,7 @@ public class Arm extends SubsystemBase {
   /** Creates a new Arm. */
   private final TalonFX armMaster = new TalonFX(31);
   private final TalonFX armSlave = new TalonFX(30);
+  
 
   private int peakVelocity = 1000;
   private double percentOfPeak = 0.75;
@@ -27,6 +28,9 @@ public class Arm extends SubsystemBase {
 
   private double F = (percentOfPeak * 2048) / (peakVelocity * percentOfPeak);
   private double cruiseVelocity = percentOfPeak * peakVelocity;
+
+
+
   final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
 
   public final double lowestAngleDeg = 48;
@@ -93,6 +97,7 @@ public class Arm extends SubsystemBase {
 
   public void stop(){
     armMaster.set(0.0);
+    armSlave.set(0);
   }
 
    public void resetEncoder(){

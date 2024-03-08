@@ -28,6 +28,7 @@ import frc.robot.commads.Intake.IntakeNote;
 import frc.robot.commads.Intake.IntakeShoot;
 import frc.robot.commads.Intake.IntakeSpin;
 import frc.robot.commads.Intake.IntakeSpit;
+import frc.robot.commads.Shooter.ShooterMoveForTime;
 import frc.robot.commads.Shooter.spinShooter;
 import frc.robot.commads.RumbleForTime;
 import frc.robot.commads.WinchCommand;
@@ -143,7 +144,11 @@ public class RobotContainer {
     //driver.getBottomButton().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
     m_CommandXboxControllerManipulator.povLeft().onTrue(new ArmToPosition(arm, 23));
 
-    m_CommandXboxControllerManipulator.povLeft().onTrue(new ShooterToAngle(arm, 0));
+    m_CommandXboxControllerManipulator.povRight().onTrue(new ShooterToAngle(arm, 0));
+
+    m_CommandXboxControllerManipulator.leftBumper().whileTrue(new ArmDown(arm));
+
+    m_CommandXboxControllerManipulator.rightBumper().whileTrue(new ArmUp(arm));
 
     m_CommandXboxControllerManipulator.b().whileTrue(new IntakeMove(intake, 0.1, -.2));
 
@@ -153,7 +158,8 @@ public class RobotContainer {
 
     m_CommandXboxControllerManipulator.x().whileTrue(new IntakeSpin(intake, 1));
 
-    m_CommandXboxControllerManipulator.povDown().whileTrue(new ArmDown(arm));
+    m_CommandXboxControllerManipulator.povDown().onTrue(new ArmToPosition(arm, 0));
+
     m_CommandXboxControllerManipulator.povUp().whileTrue(new ArmUp(arm));
 
     m_CommandXboxControllerManipulator.y().whileTrue(new InstantCommand(() -> arm.resetEncoder()));
@@ -164,7 +170,7 @@ public class RobotContainer {
 
     m_CommandXboxControllerDriver.a().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
 
-    m_CommandXboxControllerDriver.b().onTrue(new IntakeMove(intake, 0.1, -0.2));
+    m_CommandXboxControllerDriver.b().onTrue(new IntakeMove(intake, 0.1, -0.2).alongWith(new ShooterMoveForTime(shooter, -1, 0.1)));
 
     m_CommandXboxControllerDriver.x().whileTrue(new IntakeDumb(intake, 1));
 
@@ -182,11 +188,11 @@ public class RobotContainer {
     m_CommandXboxControllerDriver.rightBumper().toggleOnTrue(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
 
     //m_CommandXboxControllerDriver.leftBumper().onTrue(new ShooterToAngle(arm, 0));
-    m_CommandXboxControllerDriver.leftBumper().whileTrue(new WinchCommand(winch, 0.5) );
+    m_CommandXboxControllerDriver.leftBumper().whileTrue(new WinchCommand(winch, 0.2) );
 
-    m_CommandXboxControllerDriver.povLeft().whileTrue(new WinchCommand(winch, -0.05));
+    m_CommandXboxControllerDriver.povLeft().whileTrue(new WinchCommand(winch, -0.2));
 
-    m_CommandXboxControllerDriver.povUp().onTrue(new ArmToPosition(arm, 23));
+    //m_CommandXboxControllerDriver.povUp().onTrue(new ArmToPosition(arm, 23));
     m_CommandXboxControllerDriver.povDown().onTrue(new ArmToPosition(arm, 0));
 
 
@@ -212,6 +218,17 @@ public class RobotContainer {
     }
 
     //return AutoUtils.getCommandFromPathName("New Path", m_robotDrive);
+    
+    //return goto0
+
+    return mid2p(flipped);
+
+
+  }
+
+
+
+  public Command mid2p(boolean flipped){
     AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
 
     Command zero = new InstantCommand(() -> arm.resetEncoder());
@@ -234,7 +251,7 @@ public class RobotContainer {
 
     AutoBuilder.addCommand(zero);
 
-    AutoBuilder.addCommand(goto0);      skedsfsef    
+    AutoBuilder.addCommand(goto0);  
 
     AutoBuilder.addCommand(new InstantCommand(() -> arm.resetEncoder()));
 
@@ -255,6 +272,7 @@ public class RobotContainer {
 
     AutoBuilder.addCommand(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
 
+    /*     
     AutoBuilder.addPair("left to mid note", false, flipped, new AutoAimAt(new AutoSpin(m_robotDrive), m_robotDrive::getYawDouble , 0));
 
     AutoBuilder.addPair("intake mid near", false, flipped, new IntakeMove(intake, 1, 1));
@@ -262,12 +280,34 @@ public class RobotContainer {
     AutoBuilder.addCommand(new IntakeMove(intake, 0.1, -0.2));
 
     AutoBuilder.addCommand(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
-
+*/
 
     return AutoBuilder.getAuto();
 
 
     
-    //return goto0
+  }
+
+  public Command left2p(boolean flipped){
+    AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
+
+    Command zero = new InstantCommand(() -> arm.resetEncoder());
+
+
+    Command goto0 = new ArmToPositionAuto(arm, -23).andThen( new InstantCommand(() -> arm.spin(0)));
+
+    AutoBuilder.addCommand(zero);
+
+    AutoBuilder.addCommand(goto0);  
+
+    AutoBuilder.addCommand(new InstantCommand(() -> arm.resetEncoder()));
+    
+    AutoBuilder.addPath("left to left short", true, flipped);
+
+    AutoBuilder.addCommand(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
+
+    AutoBuilder.addPair("intake left near", false, flipped, new IntakeMove(intake, 1, 1));
+
+    return AutoBuilder.getAuto();
   }
 }
