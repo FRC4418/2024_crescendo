@@ -73,14 +73,15 @@ public class AutoUtils
 
         List<Pose2d> ls = new ArrayList<Pose2d>();
         Pose2d start = pathPlannerPath.getPreviewStartingHolonomicPose();
-        Pose2d end = new Pose2d(points.get(points.size()-1), new Rotation2d());
+        Pose2d end = new Pose2d(points.get(points.size()-1), pathPlannerPath.getGoalEndState().getRotation());
         if(flipped){
             Translation2d pos = start.getTranslation();
+            
 
-            start = new Pose2d(pos.getX(), -pos.getY(), start.getRotation());
+            start = new Pose2d(-pos.getX(), pos.getY(), start.getRotation().times(-1).plus(Rotation2d.fromDegrees(180)));
             Translation2d pos2 = end.getTranslation();
 
-            end = new Pose2d(pos2.getX(), -pos2.getY(), end.getRotation());
+            end = new Pose2d(-pos2.getX(), pos2.getY(), end.getRotation().times(-1).plus(Rotation2d.fromDegrees(180)));
         }
 
         ls.add(start);
@@ -99,7 +100,7 @@ public class AutoUtils
         return new State(ppState.timeSeconds,ppState.velocityMps,ppState.accelerationMpsSq,ppState.getTargetHolonomicPose(),ppState.curvatureRadPerMeter);
     }
 
-    public static Command getCommandFromPathName(String pathName, DriveSubsystem m_robotDrive, boolean firstRun, boolean flipped){
+    public static Command getCommandFromPathName(String pathName, DriveSubsystem m_robotDrive, boolean firstRun, boolean flipped,double maxSpeed, double maxAccel){
 
         //PathPlannerTrajectory ppTraj = PathPlannerPath.fromPathFile(pathName).getTrajectory(new ChassisSpeeds(), new Rotation2d());
 
@@ -111,8 +112,8 @@ public class AutoUtils
 
 
         TrajectoryConfig config = new TrajectoryConfig(
-            AutoConstants.kMaxSpeedMetersPerSecond,
-            AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+            maxSpeed,
+            maxAccel)
             //Add kinematics to ensure max speed is actually obeyed
             .setKinematics(DriveConstants.kDriveKinematics
         );
@@ -138,7 +139,7 @@ public class AutoUtils
             new PIDController(AutoConstants.kPXController, 0, 0),
             new PIDController(AutoConstants.kPYController, 0, 0),
             thetaController,
-            m_robotDrive::spinySetModuleStates,
+            m_robotDrive::setModuleStates,
             m_robotDrive
         );
 
@@ -147,7 +148,7 @@ public class AutoUtils
         );
 
         Command resetHeading = new InstantCommand(
-        () -> m_robotDrive.zeroHeading()
+        () -> m_robotDrive.zeroHeading(180-(float)traj.getInitialPose().getRotation().getDegrees())
         );
 
         Command speedZero = new InstantCommand(

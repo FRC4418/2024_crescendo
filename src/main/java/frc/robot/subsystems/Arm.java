@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.opencv.core.Mat;
@@ -128,6 +129,6 @@ public class Arm extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     //System.out.println(armMaster.getRotorPosition().getValueAsDouble());
-
+    SmartDashboard.putNumber("Arm Pos:",armMaster.getRotorPosition().getValueAsDouble() );
   }
 }

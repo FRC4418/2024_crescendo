@@ -8,8 +8,8 @@ import edu.wpi.first.math.util.Units;
 public class VisionUtils {
 
 
-    public static double cameraHeightInches = 13.5;
-    public static double cameraAngleDeg = 25;
+    public static double cameraHeightInches = 14;
+    public static double cameraAngleDeg = 29;
 
 
     private static double cameraHeightMeters = Units.inchesToMeters(cameraHeightInches);

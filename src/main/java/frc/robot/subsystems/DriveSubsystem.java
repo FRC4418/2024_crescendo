@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 
 public class DriveSubsystem extends SubsystemBase {
+
   
   // Create MAXSwerveModules
   private final MAXSwerveModule m_frontLeft = new MAXSwerveModule(
@@ -56,7 +57,7 @@ public class DriveSubsystem extends SubsystemBase {
   // The gyro sensor
   //private final ADIS16470_IMU m_gyro = new ADIS16470_IMU();
   private final AHRS m_gyro = new AHRS();
-  
+  public float yawOffset = 0f;
 
   // Slew rate filter variables for controlling lateral acceleration
   private double m_currentRotation = 0.0;
@@ -93,8 +94,8 @@ public class DriveSubsystem extends SubsystemBase {
                 this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                        new PIDConstants(1, 0, 0), // Translation PID constants
-                        new PIDConstants(1, 0.0, 0), // Rotation PID constants
+                        new PIDConstants(0, 0, 0), // Translation PID constants
+                        new PIDConstants(0, 0.0, 0), // Rotation PID constants
                         4.5d, // Max module speed, in m/s
                         DriveConstants.robotRadius, // Drive base radius in meters. Distance from robot center to furthest module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
@@ -279,10 +280,13 @@ public class DriveSubsystem extends SubsystemBase {
   /** Zeroes the heading of the robot. */
   public void zeroHeading() {
     m_gyro.reset();
-    
-    m_gyro.setAngleAdjustment(180);
   }
 
+  public void zeroHeading(float newOffset){
+    zeroHeading();
+    yawOffset = newOffset;
+  }
+ 
   /**
    * Returns the heading of the robot.
    *
@@ -293,7 +297,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public float getYaw(){
-    return  DriveConstants.kGyroReversed ? -m_gyro.getYaw() : m_gyro.getYaw();
+    return  (DriveConstants.kGyroReversed ? -m_gyro.getYaw() : m_gyro.getYaw()) + yawOffset;
   }
 
   public double getYawDouble(){

@@ -5,9 +5,10 @@
   "pathFolders": [
     "C4PBlue",
     "L5PBlue",
-    "Testing",
+    "Actuall Testing",
     "PIDTest",
-    "R3PBlue"
+    "R3PBlue",
+    "Testing"
   ],
   "autoFolders": [
     "BlueSide",

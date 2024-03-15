@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutionException;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
@@ -28,6 +29,8 @@ public class AutoShoot extends Command {
   private boolean shooting = false;
 
   private Timer timer;
+
+  public double yaw;
 
 
 
@@ -57,6 +60,7 @@ public class AutoShoot extends Command {
   @Override
   public void initialize() {
     shooting = false;
+    timer = new Timer();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -64,7 +68,7 @@ public class AutoShoot extends Command {
   public void execute() {
     //System.out.println("rot speed: " +getRotSpeed() + " arm current pos: " + arm.getArmPos() + " arm desired pos: " + arm.desiredMotorRot);
 
-    driveSubsystem.drive(0, 0, getRotSpeed()/8.4, false, true);
+    driveSubsystem.drive(0, 0, getRotSpeed()/6, false, true);
 
     shooter.spin(1);
 
@@ -85,12 +89,24 @@ public class AutoShoot extends Command {
 
     if(shooting)     intake.spin(1);
 
+    boolean[] checks = new boolean[3];
+    checks[0] = isInRange(yaw,0,3);
+    checks[1] = isInRange(arm.getArmPos(), arm.desiredMotorRot, 0.35);
+    checks[2] = isInRange(shooter.getSpeed(), 70, 10);
+    SmartDashboard.putNumber("yaw: ", yaw);
+    SmartDashboard.putNumber("arm error: ", arm.getArmPos() - arm.desiredMotorRot);
+    SmartDashboard.putNumber("shooter speed", shooter.getSpeed());
 
-    if(!isInRange(getRotSpeed(),0,0.3)) return; //if its still moveing dont shoot
+    SmartDashboard.putBoolean("check 1", checks[0]);
+    SmartDashboard.putBoolean("check 2", checks[1]);
+    SmartDashboard.putBoolean("check 3", checks[2]);
+    
+    
 
-    if(!isInRange(arm.getArmPos(), arm.desiredMotorRot, 0.3)) return; //if the are is close to pos
+    for(boolean check : checks){
+      if (!check) return;
+    }
 
-    if(!isInRange(shooter.getSpeed(), 80, 18)) return;
 
 
     if(!shooting) timer.start();
@@ -120,7 +136,7 @@ public class AutoShoot extends Command {
       return 0;
     }
 
-    double yaw;
+    
 
     try{yaw = VisionUtils.getId(result, 4, 7).getYaw();
     }catch(Exception e){return 0;}
@@ -138,7 +154,7 @@ public class AutoShoot extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(timer.get() > 0.3){
+    if(timer.get() > 0.4){
       timer = new Timer();
       //shooting = false;
       return true;
