@@ -181,7 +181,7 @@ public class RobotContainer {
 
     m_CommandXboxControllerManipulator.b().whileTrue(new IntakeMove(intake, 0.1, -.2));
 
-    m_CommandXboxControllerManipulator.rightTrigger().whileTrue(new spinShooter(shooter, 1));
+    m_CommandXboxControllerManipulator.rightTrigger().whileTrue(new spinShooter(shooter, 6380));
 
     m_CommandXboxControllerManipulator.a().whileTrue(new IntakeDumb(intake, 1) );
 
@@ -203,7 +203,7 @@ public class RobotContainer {
 
     m_CommandXboxControllerDriver.x().whileTrue(new IntakeDumb(intake, 1));
 
-    m_CommandXboxControllerDriver.rightTrigger().whileTrue(new spinShooter(shooter, 1));
+    m_CommandXboxControllerDriver.rightTrigger().whileTrue(new spinShooter(shooter, 6380));
 
     m_CommandXboxControllerDriver.leftTrigger().toggleOnTrue(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
 
