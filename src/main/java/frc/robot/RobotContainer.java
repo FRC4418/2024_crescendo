@@ -134,6 +134,7 @@ public class RobotContainer {
     chooser.addOption("center 2p", center2p(flipped));
     chooser.addOption("open side 2p", openSide2p(flipped));
 
+    chooser.addOption("center 4p", center4p(flipped));
     chooser.addOption("center 3p", center3p(flipped));
 
     chooser.addOption("open side far 2p", openSideFar2p(flipped));
@@ -296,6 +297,45 @@ public class RobotContainer {
     AutoBuilder.setSpeeds(1, 1);
 
     AutoBuilder.addRace("intake center note near", false, flipped, new IntakeDumb(intake, 0.5));
+
+    AutoBuilder.addCommand(new IntakeMove(intake, 0.1, -0.3));
+    AutoBuilder.addCommand(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
+
+    return AutoBuilder.getAuto();
+  }
+
+  public Command center4p(boolean flipped){
+    AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
+
+    AutoBuilder.addRace("center to amp note near", true, flipped, new IntakeDumb(intake, 0.5));
+    
+    AutoBuilder.addCommand(new IntakeMove(intake, 0.1, -0.3));
+    AutoBuilder.addCommand(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
+    AutoBuilder.addCommand(new InstantCommand(()-> arm.spin(0)));
+    AutoBuilder.addCommand(new InstantCommand(  ()-> shooter.spin(0)  ));
+    AutoBuilder.addCommand(new InstantCommand(  ()-> intake.spin(0)  ));
+
+    AutoBuilder.setSpeeds(2, 2);
+
+    AutoBuilder.addPath("amp note near to amp note center", false, flipped);
+
+    AutoBuilder.setSpeeds(1, 1);
+
+    AutoBuilder.addRace("intake center note near", false, flipped, new IntakeDumb(intake, 0.5));
+
+    AutoBuilder.addCommand(new IntakeMove(intake, 0.1, -0.3));
+    AutoBuilder.addCommand(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
+    AutoBuilder.addCommand(new InstantCommand(()-> arm.spin(0)));
+    AutoBuilder.addCommand(new InstantCommand(  ()-> shooter.spin(0)  ));
+    AutoBuilder.addCommand(new InstantCommand(  ()-> intake.spin(0)  ));
+
+    AutoBuilder.setSpeeds(2, 2);
+
+    AutoBuilder.addPath("amp note center to amp note far", false, flipped);
+
+    AutoBuilder.setSpeeds(1, 1);
+
+    AutoBuilder.addRace("intake amp note far", false, flipped, new IntakeDumb(intake, 0.5));
 
     AutoBuilder.addCommand(new IntakeMove(intake, 0.1, -0.3));
     AutoBuilder.addCommand(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
