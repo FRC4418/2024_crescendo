@@ -25,7 +25,8 @@ public class spinShooter extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.spin(speed);
+    // Spins with desired rpms
+    shooter.spinVelocity(speed);
   }
 
   // Called once the command ends or is interrupted.

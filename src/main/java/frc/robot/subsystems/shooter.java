@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -13,9 +15,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
-  private TalonFX motor1 = new TalonFX(10);
-  private TalonFX motor2 = new TalonFX(11);
+  private TalonFX motorMaster = new TalonFX(10);
+  private TalonFX motorSlave = new TalonFX(11);
 
+  private final VelocityVoltage voltageVelocity = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
+  
   private Vibrator vibrator;
 
   /** Creates a new shooter. */
@@ -27,15 +31,31 @@ public class Shooter extends SubsystemBase {
     currentLimits.StatorCurrentLimitEnable = true;
     currentLimits.StatorCurrentLimit = 10;
     fxConfig.CurrentLimits = currentLimits;
+
+    var talonFXConfigs = new TalonFXConfiguration();
+    var slot0Configs = talonFXConfigs.Slot0;
+
+    slot0Configs.kP = 0;
+    slot0Configs.kI = 0;
+    slot0Configs.kD = 0;
+    
+    motorMaster.getConfigurator().apply(talonFXConfigs);
+
+    motorSlave.setControl(new Follower(motorMaster.getDeviceID(), false));
   }
 
+  
+
   public void spin(double speed){
-    motor1.set(speed);
-    motor2.set(speed);
+    motorMaster.set(speed);
+  }
+
+  public void spinVelocity(double velocity){
+    motorMaster.setControl(voltageVelocity.withVelocity(velocity));
   }
 
   public double getSpeed(){
-    return (motor1.getVelocity().getValueAsDouble() + motor2.getVelocity().getValueAsDouble())/2;
+    return (motorMaster.getVelocity().getValueAsDouble() + motorSlave.getVelocity().getValueAsDouble())/2;
   }
 
   @Override
@@ -49,8 +69,8 @@ public class Shooter extends SubsystemBase {
       vibrator.controller2.setRumble(RumbleType.kBothRumble, 0);
     }
     
-    SmartDashboard.putNumber("motor 1 (lower) vel:", motor1.getVelocity().getValueAsDouble());
-    SmartDashboard.putNumber("motor 2 (upper) vel:", motor2.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("motor 1 (lower) vel:", motorMaster.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("motor 2 (upper) vel:", motorSlave.getVelocity().getValueAsDouble());
     ///r//rrrrrrrrrrrrrrrrrrrrrrrrrr///////////\nnnnnnnnnnnnn\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\.''''''''''''''''''''''''''''''''''\\\.\.\System.out.println(motor1.getVelocity().getValueAsDouble());
   }
 }
