@@ -271,7 +271,7 @@ public class RobotContainer {
     
     AutoBuilder.addRace("open side to open note far", true, flipped, new IntakeSpin(intake, 0.6));
 
-    AutoBuilder.addPair("open note far to shooting pt1", false, flipped, new IntakeMove(intake, 0.1, -.3));
+    AutoBuilder.addPair("open note far to shooting pt1", false, flipped, new IntakeMove(intake, 0.1, -0.3));
 
     AutoBuilder.addCommand(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
 

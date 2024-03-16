@@ -70,7 +70,8 @@ public class AutoShoot extends Command {
 
     driveSubsystem.drive(0, 0, getRotSpeed()/6, false, true);
 
-    shooter.spin(1);
+    // Max rpms
+    shooter.spinVelocity(6380);
 
     var latestResult = visionSubsystem.getLatestResult();
 

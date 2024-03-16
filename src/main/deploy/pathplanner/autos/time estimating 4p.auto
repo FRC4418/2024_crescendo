@@ -1,0 +1,43 @@
+{
+  "version": 1.0,
+  "startingPose": null,
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "center to amp note near"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "amp note near to amp note center"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "intake center note near"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "amp note center to amp note far"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "intake amp note far"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
