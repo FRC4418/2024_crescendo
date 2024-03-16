@@ -32,6 +32,7 @@ public class ShooterMoveForTime extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    // Uses rpms; for scale, max rpms for talonFX is 6380
     shooter.spinVelocity(speed);
   }
 
