@@ -49,11 +49,9 @@ public class AutoShoot extends Command {
     this.shooter = shooter;
     this.intake = intake;
     this.driveSubsystem = driveSubsystem;
-    try{
-    addRequirements(arm,intake,shooter,visionSubsystem,driveSubsystem);}
-    catch(Exception e){
-
-    }
+    
+    addRequirements(arm,intake,shooter,visionSubsystem,driveSubsystem);
+    
   }
 
   // Called when the command is initially scheduled.
@@ -66,36 +64,38 @@ public class AutoShoot extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //System.out.println("rot speed: " +getRotSpeed() + " arm current pos: " + arm.getArmPos() + " arm desired pos: " + arm.desiredMotorRot);
 
-    driveSubsystem.drive(0, 0, getRotSpeed()/6, false, true);
+    driveSubsystem.drive(0, 0, getRotSpeed()/6, false, true); //whenever this command is running you should be pointed at tag
+
+    if(shooting)     intake.spin(1);        //if the shooting variable is true intake the note to shoot
 
     // Max rpms
-    shooter.spinVelocity(6380);
+    shooter.spinVelocity(6380);   //reving up the shooter for when we want to shoot
 
-    var latestResult = visionSubsystem.getLatestResult();
+    var latestResult = visionSubsystem.getLatestResult();   //get the latest result I know we do this later, but this is just for testing if we are in a shootable range
 
-    if(latestResult == null) return;
+    if(latestResult == null) return;    //if no target no shoot
 
-    var subTarget = VisionUtils.getId(latestResult, 4, 7);
+    var subTarget = VisionUtils.getId(latestResult, 4, 7);   //filter to only shooting april tags
 
-    if (subTarget == null) return;
+    if (subTarget == null) return;    //if none of those tags are in target no shoot
 
-    double distToSp = VisionUtils.getDist(subTarget.getPitch());
-    double desiredAngle = TrajectoryUtils.getGoodShootingAngle(distToSp);
+    double distToSp = VisionUtils.getDist(subTarget.getPitch());        //use class i made to get the distance to sp
+    double desiredAngle = TrajectoryUtils.getGoodShootingAngle(distToSp);         //get the desiterd shooter angle
 
-    System.out.println(desiredAngle);
-    if(desiredAngle > arm.lowestAngleDeg) return;
-    arm.gotoShooterAngle(desiredAngle);
+    
+    if(desiredAngle > arm.lowestAngleDeg) return;     //if this angle breaks the arm dont
+    arm.gotoShooterAngle(desiredAngle);            //if the angle is good go to the angle
 
-    if(shooting)     intake.spin(1);
 
-    boolean[] checks = new boolean[3];
-    checks[0] = isInRange(yaw,0,3);
-    checks[1] = isInRange(arm.getArmPos(), arm.desiredMotorRot, 0.35);
-    checks[2] = isInRange(shooter.getSpeed(), 70, 10);
+    boolean[] checks = new boolean[3];      // make a array for all the checks, you probably could get away with 3 variables but oh well
+
+    checks[0] = isInRange(yaw,0,4);    //if we are within 4 degrees of target then this check is good
+    checks[1] = isInRange(arm.getArmPos(), arm.desiredMotorRot, 0.35);  //if the arm is in the correct position we are good
+    checks[2] = isInRange(shooter.getSpeed(), 70, 10);   //if the shooter's spinning fast enough we are good
+
     SmartDashboard.putNumber("yaw: ", yaw);
-    SmartDashboard.putNumber("arm error: ", arm.getArmPos() - arm.desiredMotorRot);
+    SmartDashboard.putNumber("arm error: ", arm.getArmPos() - arm.desiredMotorRot);   //puting all that data into smart dashboard
     SmartDashboard.putNumber("shooter speed", shooter.getSpeed());
 
     SmartDashboard.putBoolean("check 1", checks[0]);
@@ -104,19 +104,22 @@ public class AutoShoot extends Command {
     
     
 
-    for(boolean check : checks){
+    for(boolean check : checks){  //if any of these are false don't go below this line
       if (!check) return;
+    }    //below here, all checks are good
+
+
+
+    if(!shooting) {   //if we aren't shooting then start shooting
+      shooting = true;
+
+      timer.start();
     }
 
-
-
-    if(!shooting) timer.start();
-
-    shooting = true;
   }
 
 
-  private boolean isInRange(double num, double target, double range){
+  private boolean isInRange(double num, double target, double range){  //self explanitory function to help with the checks
     double max = target + range;
     double min = target - range;
 
@@ -126,7 +129,7 @@ public class AutoShoot extends Command {
   }
 
 
-  private double getRotSpeed(){
+  private double getRotSpeed(){   //function for spinning the robot to an april tag
     var result = visionSubsystem.getLatestResult();
 
 
@@ -147,7 +150,7 @@ public class AutoShoot extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
+  public void end(boolean interrupted) {  //when we finish shooting stop the timer and reset
     timer.reset();
     timer.stop();
   }
@@ -155,8 +158,8 @@ public class AutoShoot extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(timer.get() > 0.4){
-      timer = new Timer();
+    if(timer.get() > 0.4){          //when the timer for shooting is done end command
+      timer = new Timer();          //the reason im not using beam break here is if we miss the note during auto, the entire auto isn't ruined
       //shooting = false;
       return true;
     }

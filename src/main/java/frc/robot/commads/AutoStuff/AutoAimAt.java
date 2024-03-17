@@ -29,8 +29,8 @@ public class AutoAimAt extends Command {
     this.rotSupplier = rotSupplier;
     this.desiredPos = desiredPos;
 
-    try{
-    addRequirements(autoSpin);    }catch(Exception e){}
+    
+    addRequirements(autoSpin);  
   }
 
   // Called when the command is initially scheduled.

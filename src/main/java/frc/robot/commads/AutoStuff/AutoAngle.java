@@ -21,8 +21,8 @@ public class AutoAngle extends Command {
     // Use addRequirements() here to declare subsystem dependencies.
     this.arm = arm;
     this.visionSubsystem = visionSubsystem;
-    try{
-    addRequirements(arm); }catch(Exception e){}
+    
+    addRequirements(arm);
   }
 
   // Called when the command is initially scheduled.

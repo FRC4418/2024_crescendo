@@ -7,11 +7,11 @@ package frc.robot.commads.Arm;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Arm;
 
-public class armSet extends Command {
+public class ArmSet extends Command {
   public Arm arm;
   public double speed;
   /** Creates a new armSet. */
-  public armSet(Arm arm, double speed) {
+  public ArmSet(Arm arm, double speed) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.arm = arm;
     this.speed = speed;

@@ -5,20 +5,9 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
@@ -29,27 +18,22 @@ import frc.robot.commads.Intake.IntakeMove;
 import frc.robot.commads.Intake.IntakeNote;
 import frc.robot.commads.Intake.IntakeShoot;
 import frc.robot.commads.Intake.IntakeSpin;
-import frc.robot.commads.Intake.IntakeSpit;
 import frc.robot.commads.Shooter.ShooterMoveForTime;
 import frc.robot.commads.Shooter.spinShooter;
 import frc.robot.commads.RumbleForTime;
 import frc.robot.commads.WinchCommand;
-import frc.robot.commads.Arm.ArmDefaultCommand;
 import frc.robot.commads.Arm.ArmDown;
 import frc.robot.commads.Arm.ArmToPosition;
 import frc.robot.commads.Arm.ArmToPositionAuto;
 import frc.robot.commads.Arm.ArmUp;
 import frc.robot.commads.Arm.ShooterToAngle;
-import frc.robot.commads.Arm.armSet;
+import frc.robot.commads.Arm.ArmSet;
 import frc.robot.commads.AutoStuff.Aim;
-import frc.robot.commads.AutoStuff.AutoAim;
-import frc.robot.commads.AutoStuff.AutoAimAt;
 import frc.robot.commads.AutoStuff.AutoAimAtEnding;
 import frc.robot.commads.AutoStuff.AutoAngle;
 import frc.robot.commads.AutoStuff.AutoShoot;
 import frc.robot.commads.AutoStuff.ShooterSpinTime;
 import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.AutoSpin;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.VisionSubsystem;
@@ -57,30 +41,12 @@ import frc.robot.subsystems.Winch;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Vibrator;
 import frc.utils.AutoCommandBuilder;
-import frc.utils.AutoUtils;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.PathPlannerTrajectory;
-//import com.stuypulse.stuylib.input.gamepads.AutoGamepad;
-import com.pathplanner.lib.path.PathPoint;
-
-
-import edu.wpi.first.math.trajectory.proto.TrajectoryStateProto;
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -106,15 +72,11 @@ public class RobotContainer {
   private final Arm arm = new Arm();
   private final Shooter shooter = new Shooter(vibrator);
   private final Winch winch = new Winch();
-  private boolean fieldRelative = true;
   private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
 
 
   private SendableChooser<Command> chooser = new SendableChooser<>();
 
-  // The driver's controller
-
-  //AutoGamepad driver = new AutoGamepad(0);
 
   
 
@@ -122,6 +84,7 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+
     boolean flipped = false;
     var alliance = DriverStation.getAlliance();
 
@@ -141,7 +104,6 @@ public class RobotContainer {
 
     chooser.addOption("test", test(flipped));
 
-    //chooser.addOption("<--- click here for match 12 plz", rightMove(flipped));
     SmartDashboard.putData(chooser);
     // Configure the button bindings
     configureButtonBindings();
@@ -227,7 +189,7 @@ public class RobotContainer {
     m_CommandXboxControllerDriver.povDown().onTrue(new ArmToPosition(arm, 0));
 
 
-    arm.setDefaultCommand(new armSet(arm, 0));
+    arm.setDefaultCommand(new ArmSet(arm, 0));
     intake.setDefaultCommand(new IntakeDumb(intake, 0));
     shooter.setDefaultCommand(new spinShooter(shooter, 0));
     vibrator.setDefaultCommand(new RumbleForTime(vibrator, RumbleType.kBothRumble, 0, 0.1));

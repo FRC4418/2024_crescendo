@@ -29,8 +29,7 @@ public class AutoAimAtEnding extends Command {
     this.rotSupplier = rotSupplier;
     this.desiredPos = desiredPos;
 
-    try{
-    addRequirements(driveSubsystem);    }catch(Exception e){}
+    addRequirements(driveSubsystem);  
   }
 
   // Called when the command is initially scheduled.

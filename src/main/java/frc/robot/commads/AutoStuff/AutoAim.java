@@ -23,8 +23,8 @@ public class AutoAim extends Command {
     // Use addRequirements() here to declare subsystem dependencies.
     this.driveSubsystem = driveSubsystem;
     this.visionSubsystem = visionSubsystem;
-    try{
-    addRequirements(driveSubsystem,visionSubsystem); }catch(Exception e){}
+    
+    addRequirements(driveSubsystem,visionSubsystem);
   }
 
   // Called when the command is initially scheduled.

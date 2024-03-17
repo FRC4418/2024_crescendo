@@ -32,6 +32,8 @@ import frc.robot.subsystems.DriveSubsystem;
 /** Add your docs here. */
 public class AutoUtils 
 {
+
+
     public static Trajectory pathPlanerToTrajectory(PathPlannerPath pathPlannerPath, TrajectoryConfig config, boolean flipped)
     {
 
@@ -47,33 +49,25 @@ public class AutoUtils
     
 
         for (int i = 0; i < pathPoints.size(); i++) {
-        //if (i==0 || i == pathPoints.size()-1) continue;
             PathPoint pathPoint = pathPoints.get(i);             //get all the points
             points.add(pathPoint.position);
         }
 
-        states.add(ppStateToState(ppTraj.getInitialState()));
 
         for (com.pathplanner.lib.path.PathPlannerTrajectory.State ppState : ppTraj.getStates()){
-        edu.wpi.first.math.trajectory.Trajectory.State state = ppStateToState(ppState);
-        states.add(state);
+            edu.wpi.first.math.trajectory.Trajectory.State state = ppStateToState(ppState);
+            states.add(state);
         }
 
-        com.pathplanner.lib.path.PathPlannerTrajectory.State ppState = ppTraj.getEndState();
-
-        states.add(ppStateToState(ppState));
-        
-
-        // return TrajectoryGenerator.generateTrajectory(
-        //     pathPlannerPath.getPreviewStartingHolonomicPose(), 
-        //     new ArrayList<Translation2d>(), 
-        //     endPose, 
-        //     config
-        // );
 
         List<Pose2d> ls = new ArrayList<Pose2d>();
+
+        
         Pose2d start = pathPlannerPath.getPreviewStartingHolonomicPose();
+
+
         Pose2d end = new Pose2d(points.get(points.size()-1), pathPlannerPath.getGoalEndState().getRotation());
+
         if(flipped){
             Translation2d pos = start.getTranslation();
             
@@ -89,6 +83,8 @@ public class AutoUtils
 
 
         Trajectory traj = new Trajectory(states);
+
+        
 
         //System.out.println(traj.getStates().toString());
 
@@ -120,15 +116,7 @@ public class AutoUtils
 
         Trajectory traj = pathPlanerToTrajectory(PathPlannerPath.fromPathFile(pathName), config, flipped);
 
-        Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-            // Start at the origin facing the +X direction
-            new Pose2d(0, 0, new Rotation2d(0)),
-            // Pass through these two interior waypoints, making an 's' curve path
-            List.of(new Translation2d(0, 0.5)),
-            // End 3 meters straight ahead of where we started, facing forward
-            new Pose2d(0, 1, new Rotation2d(0)),
-            config
-        );
+        
 
         Command drive = new SwerveControllerCommand(
             traj,
