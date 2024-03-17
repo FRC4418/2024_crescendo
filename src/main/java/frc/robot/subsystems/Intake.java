@@ -17,8 +17,8 @@ import frc.robot.commands.RumbleForTime;
 import frc.robot.commands.Intake.IntakeMove;
 
 public class Intake extends SubsystemBase {
-  private TalonFX motor1 = new TalonFX(20);
-  private TalonFX motor2 = new TalonFX(21);
+  private TalonFX motor1 = new TalonFX(10);
+  private TalonFX motor2 = new TalonFX(11);
   public DigitalInput beamBreak = new DigitalInput(5);
   final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
 

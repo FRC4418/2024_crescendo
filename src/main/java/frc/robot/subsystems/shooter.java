@@ -15,8 +15,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
-  private TalonFX motorMaster = new TalonFX(10);
-  private TalonFX motorSlave = new TalonFX(11);
+  private TalonFX motorMaster = new TalonFX(21);
+  private TalonFX motorSlave = new TalonFX(22);
 
   private final VelocityVoltage voltageVelocity = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
   

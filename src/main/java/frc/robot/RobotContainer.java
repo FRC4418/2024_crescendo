@@ -143,7 +143,7 @@ public class RobotContainer {
 
     m_CommandXboxControllerManipulator.b().whileTrue(new IntakeMove(intake, 0.1, -.2));
 
-    m_CommandXboxControllerManipulator.rightTrigger().whileTrue(new spinShooter(shooter, 6380));
+    m_CommandXboxControllerManipulator.rightTrigger().whileTrue(new spinShooter(shooter, 6328));
 
     m_CommandXboxControllerManipulator.a().whileTrue(new IntakeDumb(intake, 1) );
 
