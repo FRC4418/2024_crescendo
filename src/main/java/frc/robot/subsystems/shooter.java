@@ -58,6 +58,7 @@ public class Shooter extends SubsystemBase {
     return (motorMaster.getVelocity().getValueAsDouble() + motorSlave.getVelocity().getValueAsDouble())/2;
   }
 
+
   @Override
   public void periodic() {
     // This mepthod will be called once per scheduler run

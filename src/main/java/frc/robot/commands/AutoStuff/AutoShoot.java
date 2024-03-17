@@ -70,7 +70,8 @@ public class AutoShoot extends Command {
     if(shooting)     intake.spin(1);        //if the shooting variable is true intake the note to shoot
 
     // Max rpms
-    shooter.spinVelocity(6380);   //reving up the shooter for when we want to shoot
+    // shooter.spinVelocity(6380);   //reving up the shooter for when we want to shoot
+    // shooter.spinSpeed(1);
 
     var latestResult = visionSubsystem.getLatestResult();   //get the latest result I know we do this later, but this is just for testing if we are in a shootable range
 
