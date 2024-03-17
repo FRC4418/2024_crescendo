@@ -13,8 +13,8 @@ public class TrajectoryUtils {
     public static double rotationPointHeight = 0.4064;
     public static double speakerHeight = 2.04d;
     public static double initialVelocity = 13.5;
-    public static double armLength = 0.5461;
-    public static double angleDifference = -35d;
+    public static double armLength = 0.485775; 
+    public static double angleDifference = -35d; // needs tuning
     public static double cameraShooterDist = Units.inchesToMeters(24);
 
     public static double getGoodShootingAngle(double distance){
