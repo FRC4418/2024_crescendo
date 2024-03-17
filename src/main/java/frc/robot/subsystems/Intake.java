@@ -13,8 +13,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.commads.RumbleForTime;
-import frc.robot.commads.Intake.IntakeMove;
+import frc.robot.commands.RumbleForTime;
+import frc.robot.commands.Intake.IntakeMove;
 
 public class Intake extends SubsystemBase {
   private TalonFX motor1 = new TalonFX(20);
