@@ -147,23 +147,23 @@ public class RobotContainer {
 
     m_CommandXboxControllerManipulator.a().whileTrue(new IntakeDumb(intake, 1) );
 
-    m_CommandXboxControllerManipulator.x().whileTrue(new IntakeSpin(intake, 1));
+    m_CommandXboxControllerManipulator.x().whileTrue(new IntakeSpin(intake, 0.75));
 
     m_CommandXboxControllerManipulator.povDown().onTrue(new ArmToPosition(arm, 0));
 
     m_CommandXboxControllerManipulator.povUp().whileTrue(new ArmUp(arm));
 
-    m_CommandXboxControllerManipulator.y().whileTrue(new InstantCommand(() -> arm.resetEncoder()));
+    // m_CommandXboxControllerManipulator.y().whileTrue(new InstantCommand(() -> arm.resetEncoder()));
+
+    m_CommandXboxControllerManipulator.y().whileTrue(new spinShooter(shooter, 0.5));
 
     m_CommandXboxControllerManipulator.leftTrigger().toggleOnTrue(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
-
-    
 
     m_CommandXboxControllerDriver.a().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(0)));
 
     m_CommandXboxControllerDriver.b().onTrue(new IntakeMove(intake, 0.1, -0.2).alongWith(new ShooterMoveForTime(shooter, -1, 0.1)));
 
-    m_CommandXboxControllerDriver.x().whileTrue(new IntakeDumb(intake, 1));
+    m_CommandXboxControllerDriver.x().whileTrue(new IntakeDumb(intake, 0.75));
 
     m_CommandXboxControllerDriver.rightTrigger().whileTrue(new spinShooter(shooter, 1));
 
