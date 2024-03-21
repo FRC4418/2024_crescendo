@@ -34,7 +34,8 @@ public class Arm extends SubsystemBase {
 
   final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
 
-  public final double lowestAngleDeg = 48;
+
+  public final double lowestAngleDeg = 56;
 
   public Arm() {
 
@@ -48,6 +49,13 @@ public class Arm extends SubsystemBase {
     slot0Configs.kP = 0.65; // A position error of 2.5 rotations results in 12 V output
     slot0Configs.kI = 0.4; // no output for integrated error
     slot0Configs.kD = 0.1; // A velocity error of 1 rps results in 0.1 V output
+
+    
+    var slot1Configs = talonFXConfigs.Slot1;
+
+    slot1Configs.kP = 0.7; // A position error of 2.5 rotations results in 12 V output
+    slot1Configs.kI = 0.5; // no output for integrated error
+    slot1Configs.kD = 0.1;
 
 
     armMaster.getConfigurator().apply(talonFXConfigs);
@@ -81,6 +89,7 @@ public class Arm extends SubsystemBase {
 
 
   }
+
 
   public void gotoShooterAngle(double angle){
     

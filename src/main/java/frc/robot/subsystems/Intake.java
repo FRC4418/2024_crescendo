@@ -17,9 +17,9 @@ import frc.robot.commands.RumbleForTime;
 import frc.robot.commands.Intake.IntakeMove;
 
 public class Intake extends SubsystemBase {
-  private TalonFX motor1 = new TalonFX(10);
-  private TalonFX motor2 = new TalonFX(11);
-  public DigitalInput beamBreak = new DigitalInput(5);
+  public TalonFX motor1 = new TalonFX(10);
+  public TalonFX motor2 = new TalonFX(11);
+  public DigitalInput beamBreak = new DigitalInput(6);
   final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
 
   private boolean prevUpdateValue = true;
@@ -41,8 +41,8 @@ public class Intake extends SubsystemBase {
 
   public void spinWBeamBreak(double speed){
     SmartDashboard.putBoolean("beam break", beamBreak.get());
-    //if(beamBreak.get() == false) spin(speed);
-    spin(speed);
+    if(beamBreak.get() == false) spin(speed);
+    //spin(speed);
     //if(beamBreak.get()) new WaitCommand(0.2).andThen(new IntakeMove(this, 0.1, -.2)).schedule();;
     /*
     if(!beamBreak.get()){ 
@@ -72,7 +72,7 @@ public class Intake extends SubsystemBase {
     // This method will be called once per scheduler run
     // System.out.println(beamBreak.get());
     boolean current = beamBreak.get();
-    
+    SmartDashboard.putBoolean("beam break", current);
     if(current != prevUpdateValue){ 
       new RumbleForTime(vibrator, RumbleType.kBothRumble, 1, 0.2).schedule();
 

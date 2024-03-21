@@ -6,50 +6,56 @@ package frc.robot.commands.AutoStuff;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
-public class ShooterSpinTime extends Command {
-  private Timer timer;
-  private double time;
+public class StillAutoShoot extends Command {
   private Shooter shooter;
-  /** Creates a new ShooterSpinTime. */
-  public ShooterSpinTime(Shooter shooter, double time) {
+  private Intake intake;
+  private Timer timer;
+  private Timer timer2;
+  private boolean shooting;
+  
+  /** Creates a new StillAutoShoot. */
+  public StillAutoShoot(Shooter shooter, Intake intake) {
     this.shooter = shooter;
-    this.time = time;
+    this.intake = intake;
+    addRequirements(shooter, intake);
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(shooter);
-    timer = new Timer();
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    timer.reset();
-    timer.restart();
+    shooting = false;
+    timer = new Timer();
     timer.start();
+    timer2 = new Timer();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.spin(0.76);
+
+    if(shooting) intake.spin(1);
+
+    if(timer.get() > 1.5) {
+      if(shooting == false){
+        shooting = true;
+        timer2.start();
+      }
+    }
+
+    shooter.spin(0.7);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    shooter.spin(0);
-    timer = new Timer();
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    
-    if(timer.get() > time){
-      return true;
-    } else {
-      return false;
-    }
+    return timer2.get() > 0.3;
   }
 }

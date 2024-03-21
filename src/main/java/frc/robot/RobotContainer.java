@@ -20,6 +20,9 @@ import frc.robot.commands.Intake.IntakeShoot;
 import frc.robot.commands.Intake.IntakeSpin;
 import frc.robot.commands.Shooter.ShooterMoveForTime;
 import frc.robot.commands.Shooter.spinShooter;
+import frc.robot.commands.InwardToShooting;
+import frc.robot.commands.NormToInward;
+import frc.robot.commands.NormToInward;
 import frc.robot.commands.RumbleForTime;
 import frc.robot.commands.WinchCommand;
 import frc.robot.commands.Arm.ArmDown;
@@ -33,9 +36,11 @@ import frc.robot.commands.AutoStuff.AutoAimAtEnding;
 import frc.robot.commands.AutoStuff.AutoAngle;
 import frc.robot.commands.AutoStuff.AutoShoot;
 import frc.robot.commands.AutoStuff.ShooterSpinTime;
+import frc.robot.commands.AutoStuff.StillAutoShoot;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.NoteMover;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.Winch;
 import frc.robot.subsystems.Shooter;
@@ -44,6 +49,7 @@ import frc.utils.AutoCommandBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -143,7 +149,7 @@ public class RobotContainer {
 
     m_CommandXboxControllerManipulator.b().whileTrue(new IntakeMove(intake, 0.1, -.2));
 
-    m_CommandXboxControllerManipulator.rightTrigger().whileTrue(new spinShooter(shooter, 6328));
+    m_CommandXboxControllerManipulator.rightTrigger().whileTrue(new spinShooter(shooter, 0.5));
 
     m_CommandXboxControllerManipulator.a().whileTrue(new IntakeDumb(intake, 1) );
 
@@ -165,13 +171,15 @@ public class RobotContainer {
 
     m_CommandXboxControllerDriver.x().whileTrue(new IntakeDumb(intake, 1));
 
-    m_CommandXboxControllerDriver.rightTrigger().whileTrue(new spinShooter(shooter, 6380));
+    m_CommandXboxControllerDriver.rightTrigger().whileTrue(new spinShooter(shooter, 0.75));
 
     m_CommandXboxControllerDriver.leftTrigger().toggleOnTrue(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
 
+    //m_CommandXboxControllerDriver.b().toggleOnTrue(new InwardToShooting(shooter, intake));
+
 
   
-
+    m_CommandXboxControllerDriver.povUp().whileTrue(new RunCommand(  () -> m_robotDrive.setX() ));
 
     
     m_CommandXboxControllerDriver.y().whileTrue(new InstantCommand(() -> arm.resetEncoder()));
@@ -181,7 +189,7 @@ public class RobotContainer {
     m_CommandXboxControllerDriver.rightBumper().toggleOnTrue(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
 
     //m_CommandXboxControllerDriver.leftBumper().onTrue(new ShooterToAngle(arm, 0));
-    m_CommandXboxControllerDriver.leftBumper().whileTrue(new WinchCommand(winch, 0.2) );
+    m_CommandXboxControllerDriver.leftBumper().toggleOnTrue(new InwardToShooting(shooter, intake));
 
     m_CommandXboxControllerDriver.povLeft().whileTrue(new WinchCommand(winch, -0.2));
 
@@ -224,8 +232,11 @@ public class RobotContainer {
 
     AutoBuilder.addPath("center to amp note near", true, flipped);
 
-    return AutoBuilder.getAuto();
+    //return AutoBuilder.getAuto();
+    return new StillAutoShoot(shooter, intake);
   }
+
+  
 
   public Command openSideFar2p(boolean flipped){
     AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
@@ -233,7 +244,7 @@ public class RobotContainer {
     
     AutoBuilder.addRace("open side to open note far", true, flipped, new IntakeSpin(intake, 0.6));
 
-    AutoBuilder.addPair("open note far to shooting pt1", false, flipped, new IntakeMove(intake, 0.1, -0.3));
+    AutoBuilder.addPair("open note far to shooting pt1", false, flipped, new IntakeMove(intake, 0.2, -0.3));
 
     AutoBuilder.addCommand(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
 
@@ -243,10 +254,11 @@ public class RobotContainer {
   public Command center3p(boolean flipped){
     AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
 
+    AutoBuilder.setSpeeds(2, 2);
 
     AutoBuilder.addRace("center to amp note near", true, flipped, new IntakeDumb(intake, 0.5));
     
-    AutoBuilder.addCommand(new IntakeMove(intake, 0.1, -0.3));
+    AutoBuilder.addCommand(new IntakeMove(intake, 0.2, -0.3));
     AutoBuilder.addCommand(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
     AutoBuilder.addCommand(new InstantCommand(()-> arm.spin(0)));
     AutoBuilder.addCommand(new InstantCommand(  ()-> shooter.spin(0)  ));
@@ -260,7 +272,7 @@ public class RobotContainer {
 
     AutoBuilder.addRace("intake center note near", false, flipped, new IntakeDumb(intake, 0.5));
 
-    AutoBuilder.addCommand(new IntakeMove(intake, 0.1, -0.3));
+    AutoBuilder.addCommand(new IntakeMove(intake, 0.2, -0.3));
     AutoBuilder.addCommand(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
 
     return AutoBuilder.getAuto();
@@ -269,35 +281,40 @@ public class RobotContainer {
   public Command center4p(boolean flipped){
     AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
 
-    AutoBuilder.addRace("center to amp note near", true, flipped, new IntakeDumb(intake, 0.5));
+    AutoBuilder.setSpeeds(3, 2.5);
+
+    AutoBuilder.addRace("center to amp note near", true, flipped, new IntakeDumb(intake, 0.5).alongWith(new ShooterMoveForTime(shooter, -.3, 4)));
     
-    AutoBuilder.addCommand(new IntakeMove(intake, 0.1, -0.3));
+    AutoBuilder.addCommand(new IntakeMove(intake, 0.2, -0.3));
     AutoBuilder.addCommand(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
     AutoBuilder.addCommand(new InstantCommand(()-> arm.spin(0)));
     AutoBuilder.addCommand(new InstantCommand(  ()-> shooter.spin(0)  ));
     AutoBuilder.addCommand(new InstantCommand(  ()-> intake.spin(0)  ));
 
-    AutoBuilder.setSpeeds(2, 2);
 
-    AutoBuilder.addPath("amp note near to amp note center", false, flipped);
+    AutoBuilder.setSpeeds(3, 2.5);
 
-    AutoBuilder.setSpeeds(1, 1);
+    AutoBuilder.addRace("amp note to center intake", false, flipped, new IntakeDumb(intake, 0.5));
 
-    AutoBuilder.addRace("intake center note near", false, flipped, new IntakeDumb(intake, 0.5));
+    AutoBuilder.addCommand(new InstantCommand(  ()-> intake.spin(0)  ));
 
-    AutoBuilder.addCommand(new IntakeMove(intake, 0.1, -0.3));
+
+    AutoBuilder.addPath("center note weird intake to open note intake", false, flipped);
+
+    
+    AutoBuilder.addCommand(new InwardToShooting(shooter, intake));
+
+    AutoBuilder.addCommand(new InstantCommand(  ()-> intake.spin(0)  ));
+
     AutoBuilder.addCommand(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
     AutoBuilder.addCommand(new InstantCommand(()-> arm.spin(0)));
     AutoBuilder.addCommand(new InstantCommand(  ()-> shooter.spin(0)  ));
     AutoBuilder.addCommand(new InstantCommand(  ()-> intake.spin(0)  ));
 
-    AutoBuilder.setSpeeds(2, 2);
+    AutoBuilder.setSpeeds(3, 2.5);
 
-    AutoBuilder.addPath("amp note center to amp note far", false, flipped);
 
-    AutoBuilder.setSpeeds(1, 1);
-
-    AutoBuilder.addRace("intake amp note far", false, flipped, new IntakeDumb(intake, 0.5));
+    AutoBuilder.addRace("weird open note intake", false, flipped, new IntakeDumb(intake, 0.5));
 
     AutoBuilder.addCommand(new IntakeMove(intake, 0.1, -0.3));
     AutoBuilder.addCommand(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
@@ -310,7 +327,7 @@ public class RobotContainer {
     
     AutoBuilder.addRace("open side to open note near", true, flipped, new IntakeDumb(intake, 0.5));
     
-    AutoBuilder.addCommand(new IntakeMove(intake, 0.1, -0.3));
+    AutoBuilder.addCommand(new IntakeMove(intake, 0.2, -0.3));
     AutoBuilder.addCommand(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
 
     return AutoBuilder.getAuto();
@@ -320,7 +337,7 @@ public class RobotContainer {
     AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
 
     AutoBuilder.addRace("center to center note near", true, flipped, new IntakeDumb(intake, 0.5));
-    AutoBuilder.addCommand(new IntakeMove(intake, 0.1, -0.3));
+    AutoBuilder.addCommand(new IntakeMove(intake, 0.2, -0.3));
     AutoBuilder.addCommand(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
     return AutoBuilder.getAuto();
   }
@@ -329,7 +346,7 @@ public class RobotContainer {
     AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
 
     AutoBuilder.addRace("amp side to amp note near", true, flipped, new IntakeDumb(intake, 0.5));
-    AutoBuilder.addCommand(new IntakeMove(intake, 0.1, -0.3));
+    AutoBuilder.addCommand(new IntakeMove(intake, 0.2, -0.3));
     AutoBuilder.addCommand(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
     //AutoBuilder.addPath("path2", false, flipped);
     return AutoBuilder.getAuto();

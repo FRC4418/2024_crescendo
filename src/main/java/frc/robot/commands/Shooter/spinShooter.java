@@ -26,7 +26,7 @@ public class spinShooter extends Command {
   @Override
   public void execute() {
     // Uses rpms; for scale, max rpms for talonFX is 6380
-    shooter.spinVelocity(speed);
+    shooter.spin(speed);
   }
 
   // Called once the command ends or is interrupted.

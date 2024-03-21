@@ -11,6 +11,11 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.InwardToShooting;
+import frc.robot.commands.Arm.ShooterToAngle;
+import frc.robot.commands.Intake.IntakeDumb;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Intake;
@@ -65,12 +70,12 @@ public class AutoShoot extends Command {
   @Override
   public void execute() {
 
-    driveSubsystem.drive(0, 0, getRotSpeed()/6, false, true); //whenever this command is running you should be pointed at tag
+    driveSubsystem.drive(0, 0, getRotSpeed()/8.5, false, true); //whenever this command is running you should be pointed at tag
 
-    if(shooting)     intake.spin(1);        //if the shooting variable is true intake the note to shoot
+    if(shooting)     intake.spin(0.75);        //if the shooting variable is true intake the note to shoot
 
     // Max rpms
-    shooter.spinVelocity(6380);   //reving up the shooter for when we want to shoot
+    shooter.spin(1);   //reving up the shooter for when we want to shoot
 
     var latestResult = visionSubsystem.getLatestResult();   //get the latest result I know we do this later, but this is just for testing if we are in a shootable range
 
@@ -81,6 +86,9 @@ public class AutoShoot extends Command {
     if (subTarget == null) return;    //if none of those tags are in target no shoot
 
     double distToSp = VisionUtils.getDist(subTarget.getPitch());        //use class i made to get the distance to sp
+
+    SmartDashboard.putNumber("sub dist", distToSp);
+
     double desiredAngle = TrajectoryUtils.getGoodShootingAngle(distToSp);         //get the desiterd shooter angle
 
     
@@ -90,9 +98,9 @@ public class AutoShoot extends Command {
 
     boolean[] checks = new boolean[3];      // make a array for all the checks, you probably could get away with 3 variables but oh well
 
-    checks[0] = isInRange(yaw,0,4);    //if we are within 4 degrees of target then this check is good
-    checks[1] = isInRange(arm.getArmPos(), arm.desiredMotorRot, 0.35);  //if the arm is in the correct position we are good
-    checks[2] = isInRange(shooter.getSpeed(), 70, 10);   //if the shooter's spinning fast enough we are good
+    checks[0] = isInRange(yaw,0,3);    //if we are within 4 degrees of target then this check is good
+    checks[1] = isInRange(arm.getArmPos(), arm.desiredMotorRot, 1);  //if the arm is in the correct position we are good
+    checks[2] = shooter.getSpeed() > 70;
 
     SmartDashboard.putNumber("yaw: ", yaw);
     SmartDashboard.putNumber("arm error: ", arm.getArmPos() - arm.desiredMotorRot);   //puting all that data into smart dashboard
@@ -112,6 +120,10 @@ public class AutoShoot extends Command {
 
     if(!shooting) {   //if we aren't shooting then start shooting
       shooting = true;
+
+      //Command shoot = new SequentialCommandGroup(new InwardToShooting(shooter, intake), new ShooterSpinTime(shooter, 1.5), new ParallelRaceGroup(new ShooterSpinTime(shooter, 0.4), new IntakeDumb(intake, 1))  );
+      
+      //new ParallelRaceGroup(shoot, new ShooterToAngle(arm,desiredAngle)).schedule();
 
       timer.start();
     }
@@ -158,7 +170,7 @@ public class AutoShoot extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(timer.get() > 0.4){          //when the timer for shooting is done end command
+    if(timer.get() > 0.5){          //when the timer for shooting is done end command
       timer = new Timer();          //the reason im not using beam break here is if we miss the note during auto, the entire auto isn't ruined
       //shooting = false;
       return true;

@@ -4,12 +4,13 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionUtils {
 
 
-    public static double cameraHeightInches = 14;
-    public static double cameraAngleDeg = 29;
+    public static double cameraHeightInches = 16;
+    public static double cameraAngleDeg = 22;
 
 
     private static double cameraHeightMeters = Units.inchesToMeters(cameraHeightInches);
