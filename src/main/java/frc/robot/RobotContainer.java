@@ -51,6 +51,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 /*
@@ -97,6 +98,8 @@ public class RobotContainer {
     if (alliance.isPresent()) {
       flipped = alliance.get() == DriverStation.Alliance.Red;
     }
+
+    flipped = false;
 
     chooser.setDefaultOption("one note", oneNote());
     chooser.addOption("amp side 2p", ampSide2p(flipped));
@@ -147,9 +150,9 @@ public class RobotContainer {
 
     m_CommandXboxControllerManipulator.rightBumper().whileTrue(new ArmUp(arm));
 
-    m_CommandXboxControllerManipulator.b().whileTrue(new IntakeMove(intake, 0.1, -.2));
+    m_CommandXboxControllerManipulator.b().whileTrue(new IntakeMove(intake, 0.1, -.3));
 
-    m_CommandXboxControllerManipulator.rightTrigger().whileTrue(new spinShooter(shooter, 0.5));
+    m_CommandXboxControllerManipulator.rightTrigger().whileTrue(new spinShooter(shooter, 0.7));
 
     m_CommandXboxControllerManipulator.a().whileTrue(new IntakeDumb(intake, 1) );
 
@@ -227,19 +230,75 @@ public class RobotContainer {
     return chooser.getSelected();
   }
 
-  public Command test(boolean flipped){
+  
+  public Command oneNote(){
     AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
 
-    AutoBuilder.addPath("center to amp note near", true, flipped);
+    Command zero = new InstantCommand(() -> arm.resetEncoder());
 
-    //return AutoBuilder.getAuto();
-    return new StillAutoShoot(shooter, intake);
+
+    Command goto0 = new ArmToPositionAuto(arm, -23).andThen( new InstantCommand(() -> arm.spin(0)));
+
+
+    Command rev = new ShooterSpinTime(shooter, 1.5);
+
+    Command shoot = new ParallelCommandGroup(new IntakeMove(intake, 0.3, 1), new ShooterSpinTime(shooter, 0.3));
+
+
+    AutoBuilder.addCommand(zero);
+
+    AutoBuilder.addCommand(goto0.alongWith(rev));  
+
+    AutoBuilder.addCommand(new InstantCommand(() -> arm.resetEncoder()));
+
+
+    AutoBuilder.addCommand(shoot);
+
+    AutoBuilder.addCommand(new InstantCommand(   () -> shooter.spin(0)  ));
+
+
+    return AutoBuilder.getAuto();
+  }
+
+  public Command test(boolean flipped){
+    
+    AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
+
+    Command zero = new InstantCommand(() -> arm.resetEncoder());
+
+
+    Command goto0 = new ArmToPositionAuto(arm, -23).andThen( new InstantCommand(() -> arm.spin(0)));
+
+
+    Command rev = new ShooterSpinTime(shooter, 1.5);
+
+    Command shoot = new ParallelCommandGroup(new IntakeMove(intake, 0.3, 1), new ShooterSpinTime(shooter, 0.3));
+
+
+    AutoBuilder.addCommand(zero);
+
+    AutoBuilder.addCommand(rev);  
+
+    AutoBuilder.addCommand(new InstantCommand(() -> arm.resetEncoder()));
+
+
+    AutoBuilder.addCommand(shoot);
+
+    AutoBuilder.addCommand(new InstantCommand(   () -> shooter.spin(0)  ));
+
+    AutoBuilder.addCommand(new WaitCommand(5));
+
+
+    return AutoBuilder.getAuto();
   }
 
   
 
   public Command openSideFar2p(boolean flipped){
     AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
+
+    AutoBuilder.addCommand(oneNote());
+
     AutoBuilder.setSpeeds(3, 2);
     
     AutoBuilder.addRace("open side to open note far", true, flipped, new IntakeSpin(intake, 0.6));
@@ -253,6 +312,7 @@ public class RobotContainer {
 
   public Command center3p(boolean flipped){
     AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
+    AutoBuilder.addCommand(oneNote());
 
     AutoBuilder.setSpeeds(2, 2);
 
@@ -324,6 +384,7 @@ public class RobotContainer {
 
   public Command openSide2p(boolean flipped){
     AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
+    AutoBuilder.addCommand(oneNote());
     
     AutoBuilder.addRace("open side to open note near", true, flipped, new IntakeDumb(intake, 0.5));
     
@@ -335,6 +396,7 @@ public class RobotContainer {
 
   public Command center2p(boolean flipped){
     AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
+    AutoBuilder.addCommand(oneNote());
 
     AutoBuilder.addRace("center to center note near", true, flipped, new IntakeDumb(intake, 0.5));
     AutoBuilder.addCommand(new IntakeMove(intake, 0.2, -0.3));
@@ -344,6 +406,7 @@ public class RobotContainer {
 
   public Command ampSide2p( boolean flipped){
     AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
+    AutoBuilder.addCommand(oneNote());
 
     AutoBuilder.addRace("amp side to amp note near", true, flipped, new IntakeDumb(intake, 0.5));
     AutoBuilder.addCommand(new IntakeMove(intake, 0.2, -0.3));
@@ -503,39 +566,6 @@ public class RobotContainer {
     return AutoBuilder.getAuto();
   }
 
-  public Command oneNote(){
-    AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
-
-    Command zero = new InstantCommand(() -> arm.resetEncoder());
-
-
-    Command goto0 = new ArmToPositionAuto(arm, -23).andThen( new InstantCommand(() -> arm.spin(0)));
-
-
-    Command rev = new ShooterSpinTime(shooter, 1.5);
-
-    Command intakeCommand = new IntakeMove(intake, 1, 1d);
-
-    Command outTake = new IntakeMove(intake, 0.1, -0.2);
-
-    Command shoot = new ParallelCommandGroup(new IntakeMove(intake, 0.3, 1), new ShooterSpinTime(shooter, 0.3));
-
-    Command setupShot = new AutoAngle(arm, m_VisionSubsystem).alongWith(new Aim(m_robotDrive, m_VisionSubsystem));    
-
-    Command goofyShoot = new IntakeMove(intake, 0.3, -1);
-
-    AutoBuilder.addCommand(zero);
-
-    AutoBuilder.addCommand(goto0);  
-
-    AutoBuilder.addCommand(new InstantCommand(() -> arm.resetEncoder()));
-
-    AutoBuilder.addCommand(rev);
-
-    AutoBuilder.addCommand(shoot);
-
-    return AutoBuilder.getAuto();
-  }
 
   public Command leftMove(boolean flipped){
     AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);

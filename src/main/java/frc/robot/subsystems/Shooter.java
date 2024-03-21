@@ -10,6 +10,7 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 // import com.oracle.graal.vector.nodes.simd.s;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,6 +44,9 @@ public class Shooter extends SubsystemBase {
     motorMaster.getConfigurator().apply(talonFXConfigs);
 
     motorSlave.setControl(new Follower(motorMaster.getDeviceID(), false));
+
+    motorMaster.setNeutralMode(NeutralModeValue.Brake);
+    motorSlave.setNeutralMode(NeutralModeValue.Brake);
   }
 
   

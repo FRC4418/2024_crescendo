@@ -11,8 +11,8 @@ public class TrajectoryUtils {
 
     public static double gravity = -9.8;
     public static double rotationPointHeight = 0.4064;
-    public static double speakerHeight = 1.825d;
-    public static double initialVelocity = 25;
+    public static double speakerHeight = 1.82;
+    public static double initialVelocity = 27;
     public static double armLength = 0.485775; 
     public static double angleDifference = -12d; // needs tuning
     public static double cameraShooterDist = Units.inchesToMeters(15);
