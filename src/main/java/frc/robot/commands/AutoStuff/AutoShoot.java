@@ -39,7 +39,7 @@ public class AutoShoot extends Command {
 
 
 
-  final double ANGULAR_P = 0.1;
+  final double ANGULAR_P = 0.12;
   final double ANGULAR_D = 0;
   PIDController turnController = new PIDController(ANGULAR_P, 0, ANGULAR_D);
   
@@ -75,7 +75,7 @@ public class AutoShoot extends Command {
     if(shooting)     intake.spin(0.75);        //if the shooting variable is true intake the note to shoot
 
     // Max rpms
-    shooter.spin(1);   //reving up the shooter for when we want to shoot
+    shooter.spin(0.85);   //reving up the shooter for when we want to shoot
 
     var latestResult = visionSubsystem.getLatestResult();   //get the latest result I know we do this later, but this is just for testing if we are in a shootable range
 

@@ -4,11 +4,14 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardComponent;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.opencv.core.Mat;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -39,8 +42,8 @@ public class Arm extends SubsystemBase {
 
   public Arm() {
 
-    armMaster.setNeutralMode(NeutralModeValue.Brake);
-    armSlave.setNeutralMode(NeutralModeValue.Brake);
+    armMaster.setNeutralMode(NeutralModeValue.Coast);
+    armSlave.setNeutralMode(NeutralModeValue.Coast);
 
 
     var talonFXConfigs = new TalonFXConfiguration();
@@ -56,6 +59,14 @@ public class Arm extends SubsystemBase {
     slot1Configs.kP = 0.7; // A position error of 2.5 rotations results in 12 V output
     slot1Configs.kI = 0.5; // no output for integrated error
     slot1Configs.kD = 0.1;
+
+    var currentLimits = new CurrentLimitsConfigs();
+
+    currentLimits.StatorCurrentLimitEnable = false;
+
+    //currentLimits.StatorCurrentLimit = 40;
+
+    //talonFXConfigs.CurrentLimits = currentLimits;
 
 
     armMaster.getConfigurator().apply(talonFXConfigs);
@@ -120,8 +131,8 @@ public class Arm extends SubsystemBase {
   // }
 
   public void goToPosition(double position){
-    armMaster.setControl(m_request.withPosition(position).withFeedForward(0.65));
-    armSlave.setControl(m_request.withPosition(position).withFeedForward(0.65));
+    armMaster.setControl(m_request.withPosition(position).withFeedForward(0.3));
+    armSlave.setControl(m_request.withPosition(position).withFeedForward(0.3));
     //System.out.println(position);
   }
 
@@ -135,9 +146,19 @@ public class Arm extends SubsystemBase {
   }
 
   
-  public void periodic() {
+  public void periodic() {    
+
     // This method will be called once per scheduler run
     //System.out.println(armMaster.getRotorPosition().getValueAsDouble());
     SmartDashboard.putNumber("Arm Pos:",armMaster.getRotorPosition().getValueAsDouble() );
+
+    SmartDashboard.putNumber("motor 1 temp", armMaster.getDeviceTemp().getValueAsDouble());
+    SmartDashboard.putNumber("motor 2 temp", armSlave.getDeviceTemp().getValueAsDouble());
+
+    SmartDashboard.putNumber("motor 1 current", armMaster.getTorqueCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("motor 2 current", armSlave.getTorqueCurrent().getValueAsDouble());
+
+
+    
   }
 }
