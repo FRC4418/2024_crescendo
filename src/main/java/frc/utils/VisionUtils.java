@@ -10,14 +10,14 @@ public class VisionUtils {
 
 
     public static double cameraHeightInches = 16;
-    public static double cameraAngleDeg = 23;
+    public static double cameraAngleDeg = 18;
 
 
     private static double cameraHeightMeters = Units.inchesToMeters(cameraHeightInches);
     private static double cameraAngleRad = Units.degreesToRadians(cameraAngleDeg);
 
 
-    private static double targetHeightMeters = 1.44;
+    private static double targetHeightMeters = 1.48;
 
     private static double heightDiff = targetHeightMeters - cameraHeightMeters;
 

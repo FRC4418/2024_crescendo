@@ -188,7 +188,7 @@ public class RobotContainer {
 
     m_CommandXboxControllerDriver.leftTrigger().toggleOnTrue(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
 
-    //m_CommandXboxControllerDriver.b().toggleOnTrue(new InwardToShooting(shooter, intake));
+    m_CommandXboxControllerDriver.b().onTrue(new InstantCommand(() -> arm.resetEncoder()));
 
 
   
@@ -208,6 +208,7 @@ public class RobotContainer {
 
     //m_CommandXboxControllerDriver.povUp().onTrue(new ArmToPosition(arm, 23));
     m_CommandXboxControllerDriver.povDown().onTrue(new ArmToPosition(arm, 0));
+    m_CommandXboxControllerDriver.povLeft().toggleOnTrue(new ArmToPosition(arm, 7));
 
 
     arm.setDefaultCommand(new ArmSet(arm, 0));
@@ -254,10 +255,10 @@ public class RobotContainer {
 
     Command shoot = new ParallelCommandGroup(new IntakeMove(intake, 0.3, 1), new ShooterSpinTime(shooter, 0.3));
 
+    //AutoBuilder.addCommand(goto0);
 
     AutoBuilder.addCommand(zero);
 
-    AutoBuilder.addCommand(goto0.alongWith(rev));  
 
     AutoBuilder.addCommand(new InstantCommand(() -> arm.resetEncoder()));
 

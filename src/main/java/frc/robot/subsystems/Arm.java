@@ -112,8 +112,8 @@ public class Arm extends SubsystemBase {
   }
 
   public void goToHome(){
-        armMaster.setControl(m_request.withPosition(Constants.armPositions.Position1).withFeedForward(0.1));
-        armSlave.setControl(m_request.withPosition(Constants.armPositions.Position1).withFeedForward(0.1));
+        armMaster.setControl(m_request.withPosition(Constants.armPositions.Position1).withFeedForward(0.65));
+        armSlave.setControl(m_request.withPosition(Constants.armPositions.Position1).withFeedForward(0.65));
   }
 
   public void stop(){

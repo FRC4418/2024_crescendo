@@ -5,17 +5,10 @@
 package frc.robot.commands.AutoStuff;
 
 
-import java.util.concurrent.ExecutionException;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.InwardToShooting;
-import frc.robot.commands.Arm.ShooterToAngle;
-import frc.robot.commands.Intake.IntakeDumb;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Intake;
@@ -37,6 +30,8 @@ public class AutoShoot extends Command {
 
   public double yaw;
 
+  public double offset = -7;
+
 
 
   final double ANGULAR_P = 0.12;
@@ -54,6 +49,8 @@ public class AutoShoot extends Command {
     this.shooter = shooter;
     this.intake = intake;
     this.driveSubsystem = driveSubsystem;
+
+    
     
     addRequirements(arm,intake,shooter,visionSubsystem,driveSubsystem);
     
@@ -72,10 +69,10 @@ public class AutoShoot extends Command {
 
     driveSubsystem.drive(0, 0, getRotSpeed()/8.5, false, true); //whenever this command is running you should be pointed at tag
 
-    if(shooting)     intake.spin(0.75);        //if the shooting variable is true intake the note to shoot
+    if(shooting)     intake.spin(1);        //if the shooting variable is true intake the note to shoot
 
     // Max rpms
-    shooter.spin(0.85);   //reving up the shooter for when we want to shoot
+    shooter.spin(0.80);   //reving up the shooter for when we want to shoot
 
     var latestResult = visionSubsystem.getLatestResult();   //get the latest result I know we do this later, but this is just for testing if we are in a shootable range
 
@@ -92,15 +89,15 @@ public class AutoShoot extends Command {
     double desiredAngle = TrajectoryUtils.getGoodShootingAngle(distToSp);         //get the desiterd shooter angle
 
     
-    if(desiredAngle > arm.lowestAngleDeg) return;     //if this angle breaks the arm dont
-    arm.gotoShooterAngle(desiredAngle);            //if the angle is good go to the angle
+    if(desiredAngle + offset > arm.lowestAngleDeg) return;     //if this angle breaks the arm dont
+    arm.gotoShooterAngle(desiredAngle + offset);            //if the angle is good go to the angle
 
 
     boolean[] checks = new boolean[3];      // make a array for all the checks, you probably could get away with 3 variables but oh well
 
     checks[0] = isInRange(yaw,0,3);    //if we are within 4 degrees of target then this check is good
     checks[1] = isInRange(arm.getArmPos(), arm.desiredMotorRot, 1);  //if the arm is in the correct position we are good
-    checks[2] = shooter.getSpeed() > 70;
+    checks[2] = shooter.getSpeed() > 68;
 
     SmartDashboard.putNumber("yaw: ", yaw);
     SmartDashboard.putNumber("arm error: ", arm.getArmPos() - arm.desiredMotorRot);   //puting all that data into smart dashboard
@@ -165,6 +162,7 @@ public class AutoShoot extends Command {
   public void end(boolean interrupted) {  //when we finish shooting stop the timer and reset
     timer.reset();
     timer.stop();
+    shooter.spin(-1);
   }
 
   // Returns true when the command should end.
@@ -173,7 +171,7 @@ public class AutoShoot extends Command {
     if(timer.get() > 0.5){          //when the timer for shooting is done end command
       timer = new Timer();          //the reason im not using beam break here is if we miss the note during auto, the entire auto isn't ruined
       //shooting = false;
-      return true;
+      return true; 
     }
     return false;
   }
