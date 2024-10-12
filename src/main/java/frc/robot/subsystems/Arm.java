@@ -22,7 +22,7 @@ import frc.robot.Constants;
 public class Arm extends SubsystemBase {
   /** Creates a new Arm. */
   private final TalonFX armMaster = new TalonFX(31);
-  private final TalonFX armSlave = new TalonFX(30);
+  private final TalonFX armSlave = new TalonFX(32);
   
 
   private int peakVelocity = 1000;
