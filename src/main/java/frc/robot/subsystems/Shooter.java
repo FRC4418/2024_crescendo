@@ -53,6 +53,7 @@ public class Shooter extends SubsystemBase {
 
   public void spin(double speed){
     motorMaster.set(speed);
+    System.out.println("spinning shooter");
   }
 
   public void spinVelocity(double velocity){

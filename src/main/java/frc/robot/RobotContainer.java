@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import javax.xml.namespace.QName;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
@@ -106,17 +108,25 @@ public class RobotContainer {
     chooser.addOption("center 2p", center2p(flipped));
     chooser.addOption("open side 2p", openSide2p(flipped));
 
-    chooser.addOption("center 4p", center4p(flipped));
-    chooser.addOption("center 3p", center3p(flipped));
+    chooser.addOption("open side 2p lame", openSide2pLame());
+    chooser.addOption("center lame 2p", centerLame2p());
+    chooser.addOption("amp side lame 2p", ampSideLame2p());
+    
+
+    chooser.addOption("open side 2p extra lame", openSide2pEvenMoreLame());
+    chooser.addOption("amp side 2p even more lame", ampSide2pEvenMoreLame());
+
+    //chooser.addOption("center 4p", center4p(flipped));
+    //chooser.addOption("center 3p", center3p(flipped));
 
     chooser.addOption("amp mobility", ampSideMove(flipped));
     chooser.addOption("open mobility", openSideMove(flipped));
 
-    chooser.addOption("amp mobility delayed  (blue)", ampSideMoveDelay(flipped));
-    chooser.addOption("amp mobility delayed (red)", openSideMoveDelay(flipped));
+    //chooser.addOption("amp mobility delayed  (blue)", ampSideMoveDelay(flipped));
+    //chooser.addOption("amp mobility delayed (red)", openSideMoveDelay(flipped));
 
-    chooser.addOption("amp side far 3p blue", ampSideFar3pBlue(flipped));
-    chooser.addOption("amp side far 3p red", ampSideFar3pRed(flipped));
+    //hooser.addOption("amp side far 3p blue", ampSideFar3pBlue(flipped));
+    //chooser.addOption("amp side far 3p red", ampSideFar3pRed(flipped));
 
     //chooser.addOption("blue far 2p open side", openSide2pFarBlue());
     //chooser.addOption("red far 2p open side", openSide2pFarRed());
@@ -184,15 +194,19 @@ public class RobotContainer {
 
     m_CommandXboxControllerDriver.x().whileTrue(new IntakeDumb(intake, 1));
 
-    m_CommandXboxControllerDriver.rightTrigger().whileTrue(new spinShooter(shooter, .75));
+    SmartDashboard.putNumber("shooter speed", .6d); //hiii move this --------------------------------------------
+
+    
+
+    m_CommandXboxControllerDriver.rightTrigger().whileTrue(new spinShooter(shooter, SmartDashboard.getNumber("shooter speed", 0d)));
 
     m_CommandXboxControllerDriver.leftTrigger().toggleOnTrue(new AutoShoot(shooter, intake, arm, m_VisionSubsystem, m_robotDrive));
 
-    m_CommandXboxControllerDriver.b().onTrue(new InstantCommand(() -> arm.resetEncoder()));
+    m_CommandXboxControllerDriver.b().whileTrue(new IntakeMove(intake, 0.1, -.3));
 
 
   
-    m_CommandXboxControllerDriver.povUp().whileTrue(new RunCommand(  () -> m_robotDrive.setX() ));
+    //m_CommandXboxControllerDriver.povUp().whileTrue(new RunCommand(  () -> m_robotDrive.setX() ));
 
     
     m_CommandXboxControllerDriver.y().whileTrue(new InstantCommand(() -> arm.resetEncoder()));
@@ -204,9 +218,8 @@ public class RobotContainer {
     //m_CommandXboxControllerDriver.leftBumper().onTrue(new ShooterToAngle(arm, 0));
     m_CommandXboxControllerDriver.leftBumper().toggleOnTrue(new InwardToShooting(shooter, intake));
 
-    m_CommandXboxControllerDriver.povLeft().whileTrue(new WinchCommand(winch, -0.2));
 
-    //m_CommandXboxControllerDriver.povUp().onTrue(new ArmToPosition(arm, 23));
+    m_CommandXboxControllerDriver.povUp().toggleOnTrue(new ArmToPosition(arm, 23));
     m_CommandXboxControllerDriver.povDown().onTrue(new ArmToPosition(arm, 0));
     m_CommandXboxControllerDriver.povLeft().toggleOnTrue(new ArmToPosition(arm, 7));
 
@@ -251,17 +264,20 @@ public class RobotContainer {
     Command goto0 = new ArmToPositionAuto(arm, -23).andThen( new InstantCommand(() -> arm.spin(0)));
 
 
-    Command rev = new ShooterSpinTime(shooter, 1);
+    Command rev = new ShooterSpinTime(shooter, 1.5);
 
-    Command shoot = new ParallelCommandGroup(new IntakeMove(intake, 0.3, 1), new ShooterSpinTime(shooter, 0.3));
+    Command shoot = new ParallelCommandGroup(new IntakeMove(intake, 0.7, 1), new ShooterSpinTime(shooter, 0.7));
 
-    //AutoBuilder.addCommand(goto0);
+    AutoBuilder.addCommand(new InstantCommand(() -> arm.resetEncoder()));
+    
+    AutoBuilder.addCommand(goto0);
 
     AutoBuilder.addCommand(zero);
 
 
     AutoBuilder.addCommand(new InstantCommand(() -> arm.resetEncoder()));
 
+    AutoBuilder.addCommand(rev);
 
     AutoBuilder.addCommand(shoot);
 
@@ -300,9 +316,121 @@ public class RobotContainer {
     AutoBuilder.addCommand(new WaitCommand(5));
 
 
+    return shoot(); //AutoBuilder.getAuto();
+  }
+
+  public Command openSide2pLame(){
+    AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
+
+    AutoBuilder.setSpeeds(2, 3);
+
+    AutoBuilder.addCommand(oneNote());
+
+    AutoBuilder.addCommand(new InstantCommand(  ()-> shooter.spin(0)  ));
+
+
+    AutoBuilder.addRace("open side to open note near", true, false, new IntakeSpin(intake, 1));
+
+    AutoBuilder.addPath("open note near to shoot", false, false);
+
+    AutoBuilder.addCommand(shoot());
+
     return AutoBuilder.getAuto();
   }
 
+  public Command openSide2pEvenMoreLame(){
+    AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
+
+    AutoBuilder.setSpeeds(3, 3);
+
+    AutoBuilder.addCommand(oneNote());
+
+    AutoBuilder.addCommand(new InstantCommand(  ()-> shooter.spin(0)  ));
+
+
+    AutoBuilder.addRace("open side to open note near", true, false, new IntakeSpin(intake, 1));
+
+    AutoBuilder.addPath("open note to shoot part 1", false, false);
+
+    AutoBuilder.addPath("open note to shoot part 2", false, false);
+
+    AutoBuilder.addCommand(shoot());
+
+    return AutoBuilder.getAuto();
+  }
+
+  public Command ampSide2pEvenMoreLame(){
+    AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
+
+    AutoBuilder.setSpeeds(3, 3);
+
+    AutoBuilder.addCommand(oneNote());
+
+    AutoBuilder.addCommand(new InstantCommand(  ()-> shooter.spin(0)  ));
+
+
+    AutoBuilder.addRace("amp side to amp note near", true, false, new IntakeSpin(intake, 1));
+
+    AutoBuilder.addPath("amp note to shoot part 1", false, false);
+
+    AutoBuilder.addPath("amp note to shoot part 2", false, false);
+
+    AutoBuilder.addCommand(shoot());
+
+    return AutoBuilder.getAuto();
+  }
+
+  public Command centerLame2p(){
+    AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
+
+    AutoBuilder.setSpeeds(2, 3);
+
+    AutoBuilder.addCommand(oneNote());
+
+    AutoBuilder.addCommand(new InstantCommand(  ()-> shooter.spin(0)  ));
+    
+    AutoBuilder.addRace("center to center note near", true, false, new IntakeSpin(intake, 1));
+
+    AutoBuilder.addPath("center note to shoot", false, false);
+
+    AutoBuilder.addCommand(shoot());
+
+    return AutoBuilder.getAuto();
+  }
+
+  public Command ampSideLame2p(){
+    AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
+
+    AutoBuilder.setSpeeds(2, 3);
+
+    AutoBuilder.addCommand(oneNote());
+
+    AutoBuilder.addCommand(new InstantCommand(  ()-> shooter.spin(0)  ));
+
+    AutoBuilder.addRace("amp side to amp note near", true, false,new IntakeSpin(intake, 1));
+
+    AutoBuilder.addPath("amp note to shoot", false, false);
+
+    AutoBuilder.addCommand(shoot());
+
+    return AutoBuilder.getAuto();
+  }
+
+
+  public Command shoot(){
+    AutoCommandBuilder AutoBuilder = new AutoCommandBuilder(m_robotDrive);
+
+    AutoBuilder.setSpeeds(2, 3);
+
+    Command rev = new ShooterSpinTime(shooter, 1.5);
+
+    Command shoot = new ParallelCommandGroup(new IntakeMove(intake, 0.7, 1), new ShooterSpinTime(shooter, 0.7));
+
+    AutoBuilder.addCommand(rev);
+    AutoBuilder.addCommand(shoot);
+
+    return AutoBuilder.getAuto();
+  }
 
   public Command openSide2pFarRed(){
     

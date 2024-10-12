@@ -10,7 +10,7 @@ public class VisionUtils {
 
 
     public static double cameraHeightInches = 16;
-    public static double cameraAngleDeg = 18;
+    public static double cameraAngleDeg = 19;
 
 
     private static double cameraHeightMeters = Units.inchesToMeters(cameraHeightInches);
