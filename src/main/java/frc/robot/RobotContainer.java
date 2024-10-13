@@ -425,9 +425,10 @@ public class RobotContainer {
 
     AutoBuilder.setSpeeds(2, 3);
 
-    Command rev = new ShooterSpinTime(shooter, 1.5);
+    Command rev = new ShooterSpinTime(shooter, 1.5).alongWith(new IntakeMove(intake, 0.2, -0.2));
 
     Command shoot = new ParallelCommandGroup(new IntakeMove(intake, 0.7, 1), new ShooterSpinTime(shooter, 0.7));
+
 
     AutoBuilder.addCommand(rev);
     AutoBuilder.addCommand(shoot);
