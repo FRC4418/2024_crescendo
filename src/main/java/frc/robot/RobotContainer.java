@@ -261,7 +261,7 @@ public class RobotContainer {
     Command zero = new InstantCommand(() -> arm.resetEncoder());
 
 
-    Command goto0 = new ArmToPositionAuto(arm, -23).andThen( new InstantCommand(() -> arm.spin(0)));
+    Command goto0 = new ArmToPositionAuto(arm, -20).andThen( new InstantCommand(() -> arm.spin(0)));
 
 
     Command rev = new ShooterSpinTime(shooter, 1.5);
