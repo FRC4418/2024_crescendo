@@ -283,6 +283,9 @@ public class RobotContainer {
 
     AutoBuilder.addCommand(new InstantCommand(   () -> shooter.spin(0)  ));
 
+    
+    AutoBuilder.addCommand(new InstantCommand(() -> arm.resetEncoder()));
+
 
     return AutoBuilder.getAuto();
   }
