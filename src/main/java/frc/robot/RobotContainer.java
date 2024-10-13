@@ -162,7 +162,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     //driver.getBottomButton().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
-    m_CommandXboxControllerManipulator.povLeft().onTrue(new ArmToPosition(arm, 23));
+    m_CommandXboxControllerManipulator.povUp().onTrue(new ArmToPosition(arm, 23));
 
     m_CommandXboxControllerManipulator.povRight().onTrue(new ShooterToAngle(arm, 0));
 
@@ -180,7 +180,7 @@ public class RobotContainer {
 
     m_CommandXboxControllerManipulator.povDown().onTrue(new ArmToPosition(arm, 0));
 
-    m_CommandXboxControllerManipulator.povUp().whileTrue(new ArmUp(arm));
+    m_CommandXboxControllerManipulator.povLeft().whileTrue(new ArmUp(arm));
 
     m_CommandXboxControllerManipulator.y().whileTrue(new InstantCommand(() -> arm.resetEncoder()));
 
